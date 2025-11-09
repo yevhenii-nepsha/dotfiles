@@ -1,0 +1,11 @@
+# Environment files with secrets
+.env
+**/.env
+
+# Service data directories
+**/data/
+**/logs/
+
+# Backup files
+*.bak
+*~

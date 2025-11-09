@@ -1,0 +1,22 @@
+# Title: Summary, imperative, start upper case, don't end with a period
+# No more than 50 chars. #### 50 chars is here:  #
+
+# Remember blank line between title and body.
+
+# Body: Explain *what* and *why* (not *how*). Include issue tracker links.
+# Wrap at 72 chars. ################################## which is here:  #
+
+
+# At the end: Include Co-authored-by for all contributors.
+# Include "Fixes: #nnn" linking to issue numbers, if applicable.
+
+# --- COMMIT END ---
+# Type can be
+#    feat     (new feature)
+#    fix      (bug fix)
+#    refactor (refactoring production code)
+#    style    (formatting, missing semi colons, etc; no code change)
+#    docs     (changes to documentation)
+#    test     (adding or refactoring tests; no production code change)
+#    chore    (updating grunt tasks etc; no production code change)
+# --------------------

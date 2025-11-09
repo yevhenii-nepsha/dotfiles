@@ -1,0 +1,72 @@
+name: "media-server"
+
+services:
+  navidrome:
+    image: deluan/navidrome:latest
+    container_name: navidrome
+    user: 1000:1000
+    restart: unless-stopped
+    ports:
+      - "4533:4533"
+    environment:
+      ND_AGENTS: "lastfm"
+      ND_SCANNER_PURGEMISSING: "always"
+      ND_COVERARTPRIORITY: "embedded"
+      ND_LASTFM_ENABLED: "true"
+      ND_LASTFM_APIKEY: ${LASTFM_APIKEY}
+      ND_LASTFM_SECRET: ${LASTFM_SECRET}
+      ND_LISTENBRAINZ_ENABLED: "false"
+      ND_SHAREURL: ${NAVIDROME_SHARE_URL}
+      ND_ENABLESHARING: "true"
+    volumes:
+      - "${NAVIDROME_DATA_PATH}:/data"
+      - "${MUSIC_LIBRARY_PATH}:/music:rw"
+    networks:
+      - media-network
+
+  qbittorrent:
+    image: linuxserver/qbittorrent:latest
+    container_name: qbittorrent
+    restart: unless-stopped
+    ports:
+      # Bind to localhost only for security
+      - "127.0.0.1:8080:8080"  # Web UI
+      - "6881:6881"            # TCP incoming connections
+      - "6881:6881/udp"        # UDP incoming connections
+    environment:
+      - PUID=${QBIT_PUID}
+      - PGID=${QBIT_PGID}
+      - TZ=${TIMEZONE}
+      - WEBUI_PORT=8080
+      # Security: disable UPnP/NAT-PMP
+      - DOCKER_MODS=linuxserver/mods:universal-cron
+    volumes:
+      - ${QBIT_CONFIG_PATH}:/config
+      - ${QBIT_DOWNLOADS_PATH}:/downloads
+    security_opt:
+      - no-new-privileges:true
+    networks:
+      - media-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  tunnel:
+    image: cloudflare/cloudflared:latest
+    container_name: cloudflared-tunnel
+    restart: unless-stopped
+    command: tunnel --no-autoupdate run --token ${TUNNEL_TOKEN}
+    networks:
+      - media-network
+    depends_on:
+      - navidrome
+
+networks:
+  media-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.28.0.0/16

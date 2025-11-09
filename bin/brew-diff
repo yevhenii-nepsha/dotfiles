@@ -1,0 +1,121 @@
+#!/usr/bin/env zsh
+
+# Helper script to compare different brew profiles
+
+DOTFILES_DIR="$(cd "$(dirname "$0")/.." && pwd)"
+PROFILES_DIR="${DOTFILES_DIR}/profiles"
+
+# Show usage information
+show_usage() {
+    cat << EOF
+Usage: brew-diff [profile1] [profile2]
+
+Compare packages between two profiles.
+
+Arguments:
+    profile1    First profile (default: local)
+    profile2    Second profile (default: server)
+
+Available profiles:
+    base      - Common packages for all machines
+    local     - Local development machine packages
+    server    - Mac Mini server packages
+
+Examples:
+    brew-diff                  # Compare local vs server
+    brew-diff local server     # Same as above
+    brew-diff base local       # Compare base vs local additions
+
+Notes:
+    - Shows packages unique to each profile
+    - Ignores comments and empty lines
+    - Base profile is shared by all machines
+EOF
+}
+
+# Extract package names from a Brewfile
+extract_packages() {
+    local file="$1"
+    if [[ ! -f "$file" ]]; then
+        echo "❌ File not found: $file" >&2
+        return 1
+    fi
+
+    # Extract brew/cask lines, remove comments and arguments
+    grep -E "^(brew|cask|tap)" "$file" | \
+        sed 's/#.*$//' | \
+        sed 's/,.*//' | \
+        sed 's/^[^"]*"//' | \
+        sed 's/".*$//' | \
+        sort | uniq
+}
+
+# Compare two profiles
+compare_profiles() {
+    local profile1="$1"
+    local profile2="$2"
+
+    local file1="${PROFILES_DIR}/${profile1}.Brewfile"
+    local file2="${PROFILES_DIR}/${profile2}.Brewfile"
+
+    if [[ ! -f "$file1" ]]; then
+        echo "❌ Profile not found: $profile1"
+        return 1
+    fi
+
+    if [[ ! -f "$file2" ]]; then
+        echo "❌ Profile not found: $profile2"
+        return 1
+    fi
+
+    echo "📊 Comparing profiles: $profile1 vs $profile2"
+    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    echo ""
+
+    local packages1=$(mktemp)
+    local packages2=$(mktemp)
+
+    extract_packages "$file1" > "$packages1"
+    extract_packages "$file2" > "$packages2"
+
+    local unique1=$(comm -23 "$packages1" "$packages2")
+    local unique2=$(comm -13 "$packages1" "$packages2")
+    local common=$(comm -12 "$packages1" "$packages2")
+
+    if [[ -n "$common" ]]; then
+        echo "✅ Common packages ($(echo "$common" | wc -l | tr -d ' ')):"
+        echo "$common" | sed 's/^/  - /'
+        echo ""
+    fi
+
+    if [[ -n "$unique1" ]]; then
+        echo "🔵 Only in $profile1 ($(echo "$unique1" | wc -l | tr -d ' ')):"
+        echo "$unique1" | sed 's/^/  - /'
+        echo ""
+    fi
+
+    if [[ -n "$unique2" ]]; then
+        echo "🟢 Only in $profile2 ($(echo "$unique2" | wc -l | tr -d ' ')):"
+        echo "$unique2" | sed 's/^/  - /'
+        echo ""
+    fi
+
+    rm -f "$packages1" "$packages2"
+}
+
+# Main logic
+case "${1:-}" in
+    help|--help|-h)
+        show_usage
+        exit 0
+        ;;
+    "")
+        # Default comparison: local vs server
+        compare_profiles "local" "server"
+        ;;
+    *)
+        local profile1="${1:-local}"
+        local profile2="${2:-server}"
+        compare_profiles "$profile1" "$profile2"
+        ;;
+esac

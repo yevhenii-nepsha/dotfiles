@@ -1,0 +1,59 @@
+[user]
+	name = Yevhenii
+	email = 21296902+99994433552@users.noreply.github.com
+
+[core]
+	editor = nvim
+	autocrlf = input
+	excludesfile = ~/.gitignore_global
+	pager = bat --style=plain
+	hooksPath = ~/.git-hooks
+
+[init]
+	defaultBranch = main
+
+[pull]
+	rebase = false
+
+[push]
+	default = simple
+	autoSetupRemote = true
+
+[alias]
+	# Basic shortcuts
+	st = status
+	co = checkout
+	br = branch
+	sw = switch
+	cm = commit
+
+	# Your common workflows
+	swc = switch -c
+	poh = push origin HEAD
+
+	# Useful additions
+	lg = log --oneline --graph --decorate
+	lga = log --oneline --graph --decorate --all
+	last = log -1 HEAD --stat
+
+	# Diff and reset
+	df = diff
+	dc = diff --cached
+	unstage = reset HEAD --
+	uncommit = reset --soft HEAD~1
+
+[color]
+	ui = auto
+	branch = auto
+	diff = auto
+	interactive = auto
+	status = auto
+
+[diff]
+	tool = nvimdiff
+
+[merge]
+	tool = nvimdiff
+
+[credential]
+	helper = osxkeychain

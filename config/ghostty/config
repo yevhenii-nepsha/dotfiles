@@ -1,0 +1,48 @@
+# Decorations
+# background-opacity         = 0.7
+# background-blur-radius     = 20
+title = "nostromo"
+
+window-padding-x           = 10, 10
+window-padding-y           = 10, 10
+macos-titlebar-style       = native
+window-decoration          = true
+
+# keybind = cmd+s=toggle_quick_terminal
+
+font-family = "JetBrainsMono Nerd Font Mono"
+font-size = 14
+font-style = Medium
+
+# Moonfly Theme
+# https://github.com/bluz71/vim-moonfly-colors/blob/master/extras/moonfly-ghostty.conf
+background = #080808
+foreground = #bdbdbd
+selection-background = #b2ceee
+selection-foreground = #080808
+cursor-color = #8e8e8e
+
+palette = 0=#323437
+palette = 1=#ff5d5d
+palette = 2=#8cc85f
+palette = 3=#e3c78a
+palette = 4=#80a0ff
+palette = 5=#cf87e8
+palette = 6=#79dac8
+palette = 7=#c6c6c6
+
+palette = 8=#949494
+palette = 9=#ff5189
+palette = 10=#36c692
+palette = 11=#c6c684
+palette = 12=#74b2ff
+palette = 13=#ae81ff
+palette = 14=#85dc85
+palette = 15=#e4e4e4
+
+term = xterm-256color
+keybind = shift+enter=text:\x1b\r
+
+# Enable OSC 52 clipboard for remote tmux sessions via SSH
+clipboard-read = allow
+clipboard-write = allow

@@ -1,0 +1,19 @@
+\pset format wrapped
+\pset columns 200
+\pset linestyle unicode
+\pset border 2
+\x auto
+\set PROMPT1 '%[%033[1m%]%M %n@%/%R%[%033[0m%]%# '
+\set PROMPT2 '[more] %R > '
+
+\pset null '(null)'
+
+\set HISTFILE ~/.psql_history- :DBNAME
+\set HISTSIZE 2000
+
+\timing on
+\encoding unicode
+
+\setenv PAGER 'less -S'
+\set COMP_KEYWORD_CASE upper
+\set HISTCONTROL ignoredups

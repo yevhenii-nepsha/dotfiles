@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+# Wrapper script that calls the Python implementation
+# This ensures compatibility if users have the old path memorized
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+exec python3 "${SCRIPT_DIR}/cleanup-server-packages.py" "$@"

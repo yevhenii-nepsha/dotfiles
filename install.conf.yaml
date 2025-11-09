@@ -1,0 +1,187 @@
+# ============================================================================
+# Dotbot Installation Configuration
+# ============================================================================
+# This file defines how dotfiles are installed and configured
+# Run: dotbot -c install.conf.yaml
+
+# ============================================================================
+# DEFAULTS - Global settings for all operations
+# ============================================================================
+- defaults:
+    link:
+      relink: true
+      create: true
+
+# ============================================================================
+# CLEANUP - Remove broken symlinks
+# ============================================================================
+- clean:
+    ~/:
+      force: true
+    ~/.config:
+      recursive: true
+
+# ============================================================================
+# DIRECTORY CREATION - Ensure required directories exist
+# ============================================================================
+- create:
+    - ~/Developer
+    - ~/Developer/projects
+    - ~/Developer/tools
+    - ~/.local/bin
+    - ~/.dotfiles-backups
+    - ~/.git-hooks
+    - ~/docker-compose
+
+# ============================================================================
+# SYMLINKS - Core dotfiles (home directory)
+# ============================================================================
+- link:
+    # Shell configuration
+    ~/.zshrc:
+      path: zshrc
+      force: true
+    ~/.zshenv: zshenv
+
+    # Editor configuration
+    ~/.vimrc: vimrc
+
+    # Database
+    ~/.psqlrc: psqlrc
+
+    # Git configuration
+    ~/.gitconfig: .gitconfig
+    ~/.gitmessage: .gitmessage
+    ~/.gitignore_global: .gitignore_global
+
+    # Git hooks (global)
+    ~/.git-hooks/commit-msg: git-hooks/commit-msg
+
+    # Claude Code personal instructions
+    ~/.claude/CLAUDE.md: CLAUDE.md
+
+# ============================================================================
+# SYMLINKS - Application configurations (.config)
+# ============================================================================
+- link:
+    # === Shell & Prompt ===
+    ~/.config/starship.toml: starship.toml
+
+    # === Editors ===
+    ~/.config/nvim: config/nvim
+
+    # === Terminal Emulators ===
+    ~/.config/ghostty: config/ghostty
+    ~/.config/kitty: config/kitty
+
+    # === Terminal Tools ===
+    ~/.config/yazi: config/yazi
+    ~/.config/bat: config/bat
+    ~/.config/zk: config/zk
+
+    # === Specific Files (not full directories) ===
+    ~/.config/tmux/tmux.conf:
+      path: config/tmux/tmux.conf
+      create: true
+
+    ~/.config/musikcube/hotkeys.json:
+      path: config/musikcube/hotkeys.json
+      create: true
+
+# ============================================================================
+# SYMLINKS - Docker Compose (server profile only)
+# ============================================================================
+- link:
+    ~/docker-compose/media:
+      path: docker-compose/media
+      if: '[ -f ~/.dotfiles-profile ] && [ "$(cat ~/.dotfiles-profile)" = "server" ]'
+    ~/docker-compose/README.md:
+      path: docker-compose/README.md
+      if: '[ -f ~/.dotfiles-profile ] && [ "$(cat ~/.dotfiles-profile)" = "server" ]'
+
+# ============================================================================
+# SHELL COMMANDS - Setup and validation
+# ============================================================================
+- shell:
+    # === Homebrew Setup ===
+    - description: "Installing and updating Homebrew packages"
+      command: ./setup_homebrew.zsh
+      stdout: true
+      stderr: true
+
+    # === Tmux Plugins Setup ===
+    - description: "Setting up tmux plugins (TPM, resurrect, continuum)"
+      command: ./scripts/setup-tmux-plugins.sh
+      stdout: true
+      stderr: true
+
+    # === Script Permissions ===
+    - description: "Setting executable permissions for maintenance scripts"
+      command: |
+        if [ -d scripts ]; then
+          chmod +x scripts/*.sh
+          echo "✅ Script permissions updated"
+        else
+          echo "⚠️  Scripts directory not found"
+        fi
+      stdout: true
+
+    # === Health Check & Validation ===
+    - description: "Running dotfiles health check"
+      command: |
+        if [ -f scripts/health-check.sh ]; then
+          echo "🔍 Running health check..."
+          ./scripts/health-check.sh || echo "⚠️  Health check completed with warnings"
+        else
+          echo "⚠️  Health check script not found, skipping validation"
+        fi
+      stdout: true
+      stderr: true
+
+# ============================================================================
+# POST-INSTALLATION SUMMARY
+# ============================================================================
+- shell:
+    - description: "Installation completed successfully"
+      command: |
+        echo ""
+        echo "============================================================================"
+        echo "🎉 Dotfiles installation completed!"
+        echo "============================================================================"
+        echo ""
+        echo "📋 Next steps:"
+        echo "  1. Restart your terminal or run: source ~/.zshrc"
+        echo "  2. Verify installation: ./scripts/health-check.sh"
+        echo "  3. Create backup: ./scripts/backup.sh"
+        echo "  4. Update everything: ./scripts/update-all.sh"
+        echo ""
+        if [ -f .dotfiles-version ]; then
+          echo "📦 Dotfiles version: $(cat .dotfiles-version)"
+        fi
+        echo "📚 Documentation: README.md and CLAUDE.md"
+        echo "🛠️  Maintenance scripts: scripts/"
+        echo "🔧 Git hooks: ~/.git-hooks/"
+        if command -v claude &> /dev/null; then
+          echo "🤖 Claude Code CLI: $(claude --version 2>/dev/null || echo 'installed')"
+        fi
+        echo ""
+        echo "🚀 Your development environment is ready!"
+        echo ""
+      stdout: true
+
+# ============================================================================
+# Configuration Notes:
+#
+# Directory vs File symlinks:
+# - Full directories (nvim, kitty, etc.): Entire directory is symlinked
+# - Specific files (tmux.conf, hotkeys.json): Only file is symlinked,
+#   parent directory is created
+#
+# Force relink: Existing files/symlinks will be overwritten
+# Create: Parent directories will be created if they don't exist
+#
+# To run specific sections:
+# - dotbot -c install.conf.yaml --only clean
+# - dotbot -c install.conf.yaml --only link
+# - dotbot -c install.conf.yaml --only create
+# ============================================================================

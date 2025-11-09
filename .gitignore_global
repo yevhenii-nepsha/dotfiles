@@ -1,0 +1,169 @@
+# ============================================================================
+# Global Git Ignore Patterns
+# ============================================================================
+
+# === macOS ===
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# === Editors ===
+# Vim
+*.swp
+*.swo
+*~
+
+# VS Code
+.vscode/
+*.code-workspace
+
+# JetBrains
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# Sublime Text
+*.sublime-project
+*.sublime-workspace
+
+# === Backup Files ===
+*.backup
+*.backup.*
+*.bak
+*.old
+*~
+
+# === Development ===
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.npm
+.yarn-integrity
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+.venv/
+.env
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Rust
+target/
+Cargo.lock
+
+# Go
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+
+# === Build artifacts ===
+dist/
+build/
+*.o
+*.a
+*.lib
+*.dll
+*.exe
+
+# === Logs ===
+*.log
+logs/
+*.log.*
+
+# === Temporary files ===
+tmp/
+temp/
+*.tmp
+*.temp
+*.bak
+*.backup
+
+# === Security ===
+.env
+.env.local
+.env.*.local
+*.key
+*.pem
+*.p12
+*.pfx
+config/secrets.yml
+config/master.key
+
+# === Claude Code ===
+.claude/
+claudedocs/
+
+# === Neovim ===
+lazy-lock.json
+
+# === Misc ===
+*.pid
+*.seed
+*.cover
+.nyc_output
+coverage/
+
+# === Local Development ===
+# Local changelog (not for repo)
+CHANGELOG.local.md
+
+# AWS
+.aws/credentials
+.aws/config
+
+# SSH
+.ssh/id_*
+!.ssh/id_*.pub
+.ssh/config.d/*
+
+# History files
+.*_history
+.python_history
+.node_repl_history
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Vim
+*.swp
+*.swo
+*~
+
+# Secrets management
+secrets.yml
+secrets.yaml
+.secrets/
+
+# Cloud CLIs
+.azure/
+.gcloud/
+
+# Package managers with credentials
+.npmrc
+.pypirc
+
+# Terraform
+*.tfstate
+*.tfstate.backup
+.terraform/
+terraform.tfvars
+

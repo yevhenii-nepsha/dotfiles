@@ -1,0 +1,82 @@
+#!/usr/bin/env zsh
+
+# Helper script to manage dotfiles profile
+
+PROFILE_FILE="$HOME/.dotfiles-profile"
+
+# Show usage information
+show_usage() {
+    cat << EOF
+Usage: dotfiles-profile [command]
+
+Commands:
+    show           Show current profile
+    set <profile>  Set profile to 'local' or 'server'
+    help           Show this help message
+
+Examples:
+    dotfiles-profile show
+    dotfiles-profile set local
+    dotfiles-profile set server
+
+Current valid profiles:
+    local    - Primary development machine (with GUI apps)
+    server   - Mac Mini server (minimal GUI, server-specific tools)
+EOF
+}
+
+# Show current profile
+show_profile() {
+    if [[ -f "$PROFILE_FILE" ]]; then
+        local profile=$(cat "$PROFILE_FILE" | tr -d '[:space:]')
+        echo "Current profile: $profile"
+        echo "Profile file: $PROFILE_FILE"
+    else
+        echo "No profile set (defaulting to 'local')"
+        echo "Set a profile with: dotfiles-profile set <profile>"
+    fi
+}
+
+# Set profile
+set_profile() {
+    local profile="$1"
+
+    if [[ -z "$profile" ]]; then
+        echo "❌ Error: Profile name required"
+        echo "Usage: dotfiles-profile set <profile>"
+        return 1
+    fi
+
+    if [[ "$profile" != "local" && "$profile" != "server" ]]; then
+        echo "❌ Error: Invalid profile '$profile'"
+        echo "Valid profiles: local, server"
+        return 1
+    fi
+
+    echo "$profile" > "$PROFILE_FILE"
+    echo "✅ Profile set to: $profile"
+    echo ""
+    echo "Run './install' or 'setup_homebrew.zsh' to apply changes"
+}
+
+# Main logic
+case "${1:-}" in
+    show)
+        show_profile
+        ;;
+    set)
+        set_profile "$2"
+        ;;
+    help|--help|-h)
+        show_usage
+        ;;
+    "")
+        show_profile
+        ;;
+    *)
+        echo "❌ Unknown command: $1"
+        echo ""
+        show_usage
+        exit 1
+        ;;
+esac

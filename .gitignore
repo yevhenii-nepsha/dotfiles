@@ -1,0 +1,20 @@
+# Claude Code local settings
+.claude/settings.local.json
+.claude/*.local.json
+
+# Temporary files
+*.log
+/tmp/
+
+# Backup files
+*.bak
+CHANGELOG.local.md
+
+# Profile-specific files
+Brewfile
+.dotfiles-profile
+config/nvim/lua/current-theme.lua
+
+# Docker Compose secrets
+docker-compose/.env
+docker-compose/**/.env
