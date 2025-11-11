@@ -1,0 +1,56 @@
+name: "pihole"
+
+services:
+  pihole:
+    image: pihole/pihole:latest
+    container_name: pihole
+    restart: unless-stopped
+    hostname: pihole
+    ports:
+      - "53:53/tcp"      # DNS TCP
+      - "53:53/udp"      # DNS UDP
+      - "8053:80/tcp"    # Web UI (using 8053 to avoid conflict with port 80)
+    environment:
+      # Timezone for logs and stats
+      TZ: ${TIMEZONE}
+
+      # Web admin password (CHANGE THIS!)
+      WEBPASSWORD: ${PIHOLE_PASSWORD}
+
+      # Upstream DNS servers (Cloudflare by default)
+      PIHOLE_DNS_: ${UPSTREAM_DNS_1};${UPSTREAM_DNS_2}
+
+      # Web UI settings
+      VIRTUAL_HOST: ${PIHOLE_HOSTNAME}
+
+      # Performance tuning
+      DNS_BOGUS_PRIV: "true"        # Never forward reverse lookups for private ranges
+      DNS_FQDN_REQUIRED: "true"     # Never forward non-FQDNs
+      DNSSEC: "false"               # DNSSEC validation (disable if issues)
+      REV_SERVER: "false"           # Enable if you want reverse DNS lookups
+
+    volumes:
+      # Persistent data for settings and block lists
+      - ${PIHOLE_DATA_PATH}/etc-pihole:/etc/pihole
+      - ${PIHOLE_DATA_PATH}/etc-dnsmasq.d:/etc/dnsmasq.d
+
+    security_opt:
+      - no-new-privileges:true
+
+    cap_add:
+      # Required capabilities for DNS operations
+      - NET_ADMIN
+
+    networks:
+      - pihole-network
+
+    healthcheck:
+      test: ["CMD", "dig", "+short", "+tries=1", "+time=2", "@127.0.0.1", "pi.hole"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+networks:
+  pihole-network:
+    driver: bridge
