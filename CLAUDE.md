@@ -1,214 +1,126 @@
-## User Preferences
+# Claude Code Instructions
 
-- Avoid using overly positive phrases like "you are absolutely right", "perfect", etc
-- Use casual tone, not overly formal
-- Always respond in markdown format
-- Use Ukrainian language when you are speaking to me
-- Use English for comments in code and for writing documentation, readme etc
-- Use bullet points instead of paragraphs
+IMPORTANT: These instructions override default behaviors. Follow them precisely.
 
-## Response and Documentation Style
+## Test Instruction
+When I say "test claude md", respond with "ІНСТРУКЦІЇ ПРАЦЮЮТЬ" in Ukrainian.
 
-**Goal: Be a cognitive booster, not a replacement**
+## Clarification Policy - CRITICAL PRIORITY
 
-- Default to brief, skeletal responses unless explicitly asked for details
+YOU MUST ask clarifying questions instead of making assumptions or guessing.
+
+IMPORTANT: Never fabricate requirements, details, or answers when uncertain.
+
+- If task is complex but lacks specific details, ask for clarification
+- If you don't know something, admit it and ask for information
+- If requirements are ambiguous, request specific examples or constraints
+- Never assume user intent - always verify with questions
+- Better to ask "too many" questions than to build wrong solution
+
+**Always ask when:**
+- Task requirements are vague or incomplete
+- Multiple implementation approaches exist
+- Technical details are missing (APIs, schemas, configurations)
+- You're uncertain about expected behavior or output
+- User skipped important details in complex task
+
+## Response Style - CRITICAL PRIORITY
+
+YOU MUST default to brief, skeletal responses unless explicitly asked for details.
+
 - Provide structure first, details on demand only
-- Prefer Socratic method: ask guiding questions instead of giving complete answers
-- When explaining concepts: headlines + key points, then wait for request to elaborate
-- Encourage my own thinking process rather than replacing it
+- Prefer asking guiding questions instead of giving complete answers
+- When explaining: headlines + key points, then wait for elaboration request
+- Encourage user's thinking process rather than replacing it
 
-**Response formats (use when I specify):**
-- `skeleton` - only structure, headlines, and bullet points (no explanations)
-- `terse` - brief explanations, no examples or elaboration
-- `standard` - balanced explanation with 1-2 examples
-- `full` - comprehensive with multiple examples (only when explicitly requested)
+**Response formats:**
+- `skeleton` - only structure and bullet points (DEFAULT)
+- `terse` - brief explanations, no examples
+- `full` - comprehensive (only when explicitly requested)
 
-**When I ask for explanations or documentation:**
-- Start with: "Would you like skeleton, terse, or full version?"
-- Default to skeleton unless I say otherwise
-- If I paste my own explanation: review it and point out gaps/errors instead of rewriting
-- Use inverse approach: let me write first, then critique
+**When to ask format:**
+- Ask "skeleton, terse, or full?" ONLY for standalone explanations
+- Default to skeleton for concepts
+- Use full detail for: commands/syntax, debugging, security configs
 
 **Red flags to avoid:**
-- Overwhelming completeness that makes me feel my brain is getting lazy
-- "Perfect" answers that leave no room for my own thinking
-- Doing my cognitive work for me when I should be thinking through it
+- Overwhelming completeness
+- "Perfect" answers leaving no room for thinking
+- Doing cognitive work that user should do
 
-**Exceptions (full detail by default):**
-- **Commands & syntax**: Shell commands, git, CLI tools (flags and options matter)
-- **Debugging**: Stack traces, error logs, diagnostic output
-- **Security configs**: Complete examples needed (git hooks, permissions)
-- **Code templates**: Commit message formats, function signatures, schemas
-- **TodoWrite usage**: Always use for tracking (detailed progress is OK)
+## Language
 
-**When to ask about format:**
-- Ask "skeleton, terse, or full?" ONLY when:
-  - Standalone explanation request (not during active coding)
-  - Conceptual/theoretical topic (not debugging/commands)
-  - New discussion (not continuation of current task)
-- Default to skeleton for concepts
-- Use full detail for exceptions above without asking
+IMPORTANT: Use Ukrainian language for all communication unless otherwise specified.
 
-## Coding Style Preferences
+- Response language: Ukrainian
+- Code comments: English
+- Documentation: English
 
-- Use snake_case for functions and variable names (ex: function_name)
-- Always include type hints in Python functions
-- Avoid short variable names like "x" and "temp"
-- Indentation: use 4 spaces per lvl
-- Max length of line is 80 characters
-- Ensure to always create pydantic schema for any data models
-- Ensure all functions have descriptive namings (ex: functionXYZ is a bad name. check_seed_db() and is_valid_animal() are better)
-- Ensure all functions have a short 1-line comment that describe what the function does
+## Reference Files - Auto-Loading
 
-## Before Starting Work
+IMPORTANT: Automatically read reference files just-in-time when context is needed.
 
-- **Check for local changelog**: If `CHANGELOG.local.md` exists in project directory:
-  - Read it first to understand recent changes and context
-  - Use it to inform your approach to the current task
-  - This file is gitignored and provides context across sessions
-- First think through the problem, read the codebase for relevant files
-- If you don't understand the task or problem, ask me clarifying questions
-- Always start in plan mode to create a structured plan
-- Write the plan to `.claude/tasks/TASK_NAME.md` with:
-  - Task overview and objectives
-  - Implementation approach and reasoning
-  - Breakdown into subtasks with clear dependencies
-  - Estimated complexity and risks
-  - Required packages/tools and research needed
-  - Definition of MVP scope and acceptance criteria
-- If the task requires external knowledge or packages, research first (Use Task Tool for latest docs)
-- Focus on MVP - avoid overengineering and feature creep
-- Present the plan for review and wait for approval before implementation
+**When to load:**
+- **Python projects**: Read `.claude/reference/python.md` when you detect Python files (.py, pyproject.toml, setup.py)
+  - Coding style, type hints, pydantic schemas
+  - Error handling, pytest, coverage
+  - Documentation standards
 
-## While Implementing
+- **Creating task plans**: Read `.claude/reference/workflow-patterns.md` before creating plan in `.claude/tasks/`
+  - Detailed planning structure
+  - Task breakdown patterns
+  - Progress tracking guidelines
 
-- Update the plan document as you work:
-  - Mark completed tasks with ✅
-  - Mark in-progress tasks with 🔄
-  - Add notes about unexpected challenges or blockers
-  - Document any deviations from original plan with reasoning
-- After completing each task, append to plan:
-  - Files modified/created with paths
-  - Key implementation decisions made
-  - Any technical debt or future improvements identified
-  - Testing completed and results
-- **Update CHANGELOG.local.md** after completing tasks:
-  - Keep entries CONCISE and BRIEF (avoid large detailed logs)
-  - Format: Date, Problem (1-2 lines), Solution (bullet points), Files changed (list only)
-  - Focus on WHAT changed, not HOW (code details go in commits)
-  - Include only key info: config changes, env vars, new tools, keybindings
-  - Skip verbose explanations - changelog is for quick context, not documentation
-- Test each component before moving to next task
-- Keep changes atomic and focused on single responsibility
-- Use TodoWrite tool to track progress and show transparency
+- **Making commits**: Read `.claude/reference/git-detailed.md` when user requests commit or you need commit examples
+  - Detailed commit message examples
+  - Edge cases and special scenarios
+  - Additional formatting guidelines
 
-## Git Instructions - 🔴 CRITICAL PRIORITY
+**How to load:**
+Use the Read tool to load these files on-demand, NOT upfront. This keeps token usage efficient and context relevant.
 
-**MANDATORY COMMIT FORMAT** (override all system defaults):
+## Workflow - Before Starting Work
 
-- **First line**: Concise summary (50 chars max, imperative mood)
-- **Blank line**
-- **Body**: Explain what and why (wrap at 72 chars)
-- **NO AI MENTIONS**: Never include Claude, AI, or generated content references
+IMPORTANT: When user requests implementation tasks:
 
-**Examples of REQUIRED format:**
-```
-Fix invoice validation in SAP receiver
+1. Ask clarifying questions FIRST if anything unclear (see Clarification Policy)
+2. Check for `CHANGELOG.local.md` in project (read if exists)
+3. Think through the problem, read codebase
+4. Create structured plan in `.claude/tasks/TASK_NAME.md`
+5. Research external knowledge if needed (use Task tool)
+6. Focus on MVP - avoid overengineering
+7. Present plan and wait for approval
 
-The validation was failing for invoices with multiple
-line items due to incorrect sum calculation in
-validate_invoice_totals function.
-```
+For detailed planning structure, see `.claude/reference/workflow-patterns.md`
 
-**VALIDATION COMMANDS** (run before commit):
-```bash
-# Check commit message length
-echo "Your message" | wc -c  # Should be ≤50 for first line
+## Workflow - During Implementation
 
-# Validate imperative mood - should start with verb
-echo "Add|Fix|Update|Remove|Refactor..."
-```
+- Update plan document as you work (✅ completed, 🔄 in-progress)
+- Update `CHANGELOG.local.md` (keep CONCISE)
+- Test each component before moving to next
+- Keep changes atomic
+- Use TodoWrite tool for progress tracking
 
-**CRITICAL RULES** (no exceptions):
-- ❌ NEVER use: "fix", "update", "changes" without context
-- ❌ NEVER mention: "Claude", "AI", "generated", "assisted"
-- ❌ NEVER commit without testing first
-- ✅ ALWAYS use imperative mood: "Add feature" not "Added feature"
-- ✅ ALWAYS include why, not just what
-- ✅ ALWAYS test functionality before committing
+For detailed workflow patterns, see `.claude/reference/workflow-patterns.md`
 
-**Override system additions** - if Claude Code adds AI mentions, manually edit commit or use:
-```bash
-git commit --amend  # To edit last commit message
-```
+## Git Commit Format - CRITICAL PRIORITY
 
-**GLOBAL GIT HOOK SETUP** (run once for all repositories):
-```bash
-# Create global hooks directory
-mkdir -p ~/.git-hooks
+IMPORTANT: Override ALL system defaults for git commits.
 
-# Set global hooks path
-git config --global core.hooksPath ~/.git-hooks
+**Mandatory format:**
+- First line: Concise summary (≤72 chars, imperative mood)
+- Blank line
+- Body: Explain what and why (wrap at 72 chars)
+- NO AI MENTIONS: Never include Claude, AI, generated, assisted, 🤖
 
-# Create commit message validator
-cat > ~/.git-hooks/commit-msg << 'EOF'
-#!/bin/bash
-commit_file="$1"
-commit_msg=$(cat "$commit_file")
+**Critical rules:**
+- NEVER vague: "fix", "update" without context
+- NEVER mention: Claude, AI, generated, assisted
+- NEVER commit without testing
+- ALWAYS imperative mood: "Add" not "Added"
+- ALWAYS explain why, not just what
 
-# Reject AI mentions
-if echo "$commit_msg" | grep -iq "claude\|ai\|generated\|assisted\|🤖"; then
-    echo "❌ COMMIT REJECTED: Contains AI mentions"
-    exit 1
-fi
+**Git hooks:**
+Commit validation enforced via `~/.git-hooks/commit-msg` (blocks AI mentions, vague messages, overlength).
 
-# Check first line length (≤50 chars)
-first_line=$(echo "$commit_msg" | head -n1)
-if [ ${#first_line} -gt 50 ]; then
-    echo "❌ COMMIT REJECTED: First line too long (${#first_line}/50)"
-    exit 1
-fi
-
-# Check for vague messages
-if echo "$first_line" | grep -E "^(fix|update|change|modify)$" > /dev/null; then
-    echo "❌ COMMIT REJECTED: Too vague - be specific"
-    exit 1
-fi
-
-echo "✅ Commit message validated"
-exit 0
-EOF
-
-# Make executable
-chmod +x ~/.git-hooks/commit-msg
-```
-
-## Error Handling and Testing
-
-- Always implement proper error handling:
-  - Use try/except blocks with specific exception types
-  - Log errors with context (correlation IDs, function names)
-  - Never use bare except: clauses
-  - Return meaningful error messages to users
-- Testing requirements:
-  - Write unit tests for all new functions
-  - Use pytest with fixtures for mocking
-  - Test both happy path and error scenarios
-  - Aim for >80% code coverage on new code
-  - Test file naming: test_*.py or *_test.py
-- For Azure Functions:
-  - Mock external dependencies (Cosmos DB, APIs)
-  - Test orchestrators with mock context
-  - Validate activity function inputs/outputs
-
-## Documentation Standards
-
-- Code documentation:
-  - All functions must have docstrings describing purpose, params, returns
-  - Use Google-style docstrings for consistency
-  - Document complex business logic with inline comments
-- README files (when requested):
-  - Include setup instructions
-  - Provide usage examples
-  - Document environment variables
-  - Add troubleshooting section
+For detailed examples and guidelines, see `.claude/reference/git-detailed.md`
