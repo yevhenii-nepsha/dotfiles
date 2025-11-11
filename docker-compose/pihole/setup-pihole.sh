@@ -135,16 +135,25 @@ create_vm() {
 
     local network_interface=$(get_network_interface)
 
-    print_info "Creating VM '$VM_NAME' with bridged network on $network_interface..."
-    multipass launch --name "$VM_NAME" \
+    print_info "Creating VM '$VM_NAME'..."
+
+    # Try to create with bridged network, fallback to basic VM if fails
+    if ! multipass launch --name "$VM_NAME" \
         --cpus "$VM_CPUS" \
         --memory "$VM_MEMORY" \
         --disk "$VM_DISK" \
-        --network "name=$network_interface,mode=auto"
+        --network "$network_interface" 2>/dev/null; then
+
+        print_warning "Bridged network failed, creating VM with NAT network..."
+        multipass launch --name "$VM_NAME" \
+            --cpus "$VM_CPUS" \
+            --memory "$VM_MEMORY" \
+            --disk "$VM_DISK"
+    fi
 
     # Wait for VM to be ready
     print_info "Waiting for VM to be ready..."
-    sleep 10
+    sleep 15
 
     print_success "VM created successfully"
     multipass info "$VM_NAME"
