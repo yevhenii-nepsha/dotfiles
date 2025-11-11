@@ -16,7 +16,34 @@ Pi-hole is a DNS-based ad blocker that:
 - Access to your router settings (Apple Airport Extreme)
 - VM must be always running for network DNS to work
 
-## Setup Instructions
+## Quick Start (Automated Setup)
+
+**Recommended:** Use the automated setup script for one-command installation.
+
+```bash
+cd ~/.dotfiles/docker-compose/pihole
+./setup-pihole.sh
+```
+
+This script will:
+- ✅ Install Multipass (if not installed)
+- ✅ Create Ubuntu VM with bridged network
+- ✅ Install Docker in VM
+- ✅ Disable systemd-resolved (frees port 53)
+- ✅ Deploy Pi-hole with your configuration
+- ✅ Display router configuration instructions
+
+**Requirements:**
+- macOS with Homebrew installed
+- Admin access to Apple Airport Extreme router
+
+After running the script, follow the displayed instructions to configure your router DNS settings.
+
+---
+
+## Manual Setup Instructions
+
+If you prefer manual setup or need to troubleshoot, follow these detailed instructions:
 
 ### Option A: Multipass VM Setup (Recommended for macOS)
 
