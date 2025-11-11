@@ -1,10 +1,10 @@
 -- OSC 52 clipboard provider for SSH sessions
 -- Allows copying from remote nvim to local system clipboard
 
--- Maximum size for OSC 52 clipboard (100KB before base64 encoding)
--- After base64 encoding (~33% increase), this becomes ~133KB
--- Most terminals support up to 100KB-1MB, but we play it safe
-local MAX_CLIPBOARD_SIZE = 100 * 1024
+-- Maximum size for OSC 52 clipboard (10MB before base64 encoding)
+-- After base64 encoding (~33% increase), this becomes ~13.3MB
+-- Most modern terminals support large transfers
+local MAX_CLIPBOARD_SIZE = 10 * 1024 * 1024
 
 local function copy(lines, _)
   -- Join lines and encode to base64
@@ -15,21 +15,26 @@ local function copy(lines, _)
   if text_size > MAX_CLIPBOARD_SIZE then
     vim.notify(
       string.format(
-        'Text too large for OSC 52 clipboard: %d KB (max: %d KB)\nTry selecting less text or use file transfer.',
+        '❌ Text too large for OSC 52 clipboard: %d KB (max: %d KB)\nTry selecting less text or use file transfer.',
         math.floor(text_size / 1024),
         math.floor(MAX_CLIPBOARD_SIZE / 1024)
       ),
-      vim.log.levels.WARN
+      vim.log.levels.ERROR
     )
     return
   end
 
   local base64 = vim.fn.system('base64', text):gsub('\n', '')
 
-  -- Debug: show size for large selections
-  if text_size > 10 * 1024 then -- Show info for selections > 10KB
+  -- Show size info for medium and large selections
+  if text_size > 50 * 1024 then -- Show warning for selections > 50KB
     vim.notify(
-      string.format('Copying %d KB via OSC 52...', math.floor(text_size / 1024)),
+      string.format('⚠️  Copying %d KB via OSC 52...', math.floor(text_size / 1024)),
+      vim.log.levels.WARN
+    )
+  elseif text_size > 10 * 1024 then -- Show info for selections > 10KB
+    vim.notify(
+      string.format('📋 Copying %d KB via OSC 52...', math.floor(text_size / 1024)),
       vim.log.levels.INFO
     )
   end
@@ -46,13 +51,14 @@ local function paste()
   return vim.fn.getreg('"')
 end
 
--- Detect if running over SSH or in tmux
+-- Detect if running over SSH (but not local tmux)
 local function is_remote()
-  return os.getenv('SSH_CONNECTION') ~= nil or os.getenv('TMUX') ~= nil
+  return os.getenv('SSH_CONNECTION') ~= nil
 end
 
 -- Configure clipboard provider
 if is_remote() then
+  -- Remote SSH session: use OSC 52
   vim.g.clipboard = {
     name = 'OSC 52',
     copy = {
@@ -67,6 +73,6 @@ if is_remote() then
   }
   vim.o.clipboard = 'unnamedplus'
 else
-  -- Use system clipboard on local machine
+  -- Local machine (including local tmux): use system clipboard
   vim.o.clipboard = 'unnamedplus'
 end
