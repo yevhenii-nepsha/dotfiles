@@ -12,14 +12,122 @@ Pi-hole is a DNS-based ad blocker that:
 
 ## Prerequisites
 
-- Docker and Docker Compose installed on your server
-- Static IP address for your server in local network
+- Multipass VM with bridged network (or Linux server)
 - Access to your router settings (Apple Airport Extreme)
-- Server must be always running for network DNS to work
+- VM must be always running for network DNS to work
 
 ## Setup Instructions
 
-### 1. Configuration
+### Option A: Multipass VM Setup (Recommended for macOS)
+
+This is the recommended approach for macOS hosts, as Docker on macOS cannot bind to port 53 due to system DNS conflicts.
+
+#### 1. Install Docker in VM
+
+Copy and run the setup script in your Multipass VM:
+
+```bash
+# Copy setup script to VM
+multipass transfer setup-vm.sh mother:/home/ubuntu/
+
+# Enter VM
+multipass shell mother
+
+# Run setup script
+chmod +x setup-vm.sh
+./setup-vm.sh
+
+# Reload docker group (or logout/login)
+newgrp docker
+```
+
+#### 2. Copy Pi-hole Configuration
+
+From your Mac host:
+
+```bash
+# Transfer files to VM
+multipass transfer compose.yml mother:/home/ubuntu/pihole/
+multipass transfer .env.example mother:/home/ubuntu/pihole/
+```
+
+#### 3. Configure Environment
+
+Inside the VM:
+
+```bash
+cd ~/pihole
+cp .env.example .env
+nano .env
+```
+
+**Required changes in `.env`:**
+- `PIHOLE_PASSWORD` - Set a strong password for web admin
+- `PIHOLE_DATA_PATH=/home/ubuntu/pihole` - Already set correctly
+- `TIMEZONE` - Your timezone (default: `Europe/Kyiv`)
+
+**Optional changes:**
+- `UPSTREAM_DNS_1` and `UPSTREAM_DNS_2` - Upstream DNS servers (default: Cloudflare)
+
+Note: Setup script already created data directories (`~/pihole/etc-pihole` and `~/pihole/etc-dnsmasq.d`)
+
+#### 4. Start Pi-hole
+
+```bash
+cd ~/pihole
+docker compose up -d
+```
+
+Check if running:
+
+```bash
+docker compose ps
+docker compose logs
+```
+
+#### 5. Access Web Interface
+
+Get your VM's IP address:
+
+```bash
+multipass info mother | grep IPv4
+```
+
+Use the bridged network IP (e.g., `192.168.1.23`), then open in browser:
+- `http://192.168.1.23:8053/admin`
+
+Login with the password you set in `.env` file.
+
+#### 6. Configure Apple Airport Extreme Router
+
+To make all devices in your network use Pi-hole:
+
+1. Open **AirPort Utility** (macOS) or access web interface
+2. Select your Airport Extreme router
+3. Click **Edit**
+4. Go to **Internet** tab
+5. Click **Internet Options** button
+6. In **DHCP** section, find **DNS Servers**
+7. Set Primary DNS to your VM's IP: `192.168.1.23` (from multipass info)
+8. Set Secondary DNS to `8.8.8.8` (fallback if Pi-hole is down)
+9. Click **Save** and wait for router to restart
+
+#### 7. Test Pi-hole
+
+After router restarts:
+
+1. Reconnect your devices to WiFi
+2. Visit a website with ads
+3. Check Pi-hole admin panel to see blocked queries
+4. Test DNS resolution: `nslookup pi.hole`
+
+---
+
+### Option B: Linux Server Setup
+
+If running on a native Linux server instead of Multipass VM:
+
+#### 1. Configuration
 
 Copy the example environment file and customize it:
 
