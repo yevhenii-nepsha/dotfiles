@@ -58,14 +58,3 @@ unlockdir() {
   fi
 }
 
-# Smart tmux launcher with nested detection
-# Automatically sets TMUX_NESTED=1 when starting tmux inside tmux
-tmux() {
-  if [[ -n "$TMUX" ]]; then
-    # Already inside tmux, set TMUX_NESTED for nested session
-    TMUX_NESTED=1 command tmux "$@"
-  else
-    # Not inside tmux, run normally
-    command tmux "$@"
-  fi
-}

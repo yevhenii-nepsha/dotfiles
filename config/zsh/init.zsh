@@ -33,26 +33,3 @@ if command -v direnv &>/dev/null; then
   eval "$(direnv hook zsh)"
 fi
 
-# Detect nested tmux via SSH connection
-# If connecting via SSH, assume we're in nested tmux (local tmux -> SSH -> remote tmux)
-if [[ -n "$SSH_CONNECTION" || -n "$SSH_CLIENT" || -n "$SSH_TTY" ]]; then
-  export TMUX_NESTED=1
-fi
-
-# Auto-attach to tmux session or restore last saved session
-if command -v tmux &>/dev/null && [ -z "$TMUX" ]; then
-  # Check if there are running sessions
-  if tmux list-sessions &>/dev/null; then
-    # Attach to main or first available session
-    tmux attach-session -t main 2>/dev/null || tmux attach-session
-  else
-    # No running sessions - check if there's a saved session to restore
-    if [ -f ~/.config/tmux/resurrect/last ]; then
-      # Start tmux (continuum will auto-restore the last saved session)
-      tmux
-    else
-      # No saved sessions - create new 'main' session
-      tmux new-session -s main
-    fi
-  fi
-fi

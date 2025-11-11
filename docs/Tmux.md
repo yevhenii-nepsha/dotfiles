@@ -1,6 +1,6 @@
 # Tmux Configuration Guide
 
-Complete guide to tmux configuration with session persistence and nested tmux support.
+Complete guide to tmux configuration with session persistence.
 
 ## Quick Start
 
@@ -23,9 +23,8 @@ Your tmux sessions automatically save and restore across computer restarts. Work
 
 ### How It Works
 
-1. **On Login**: Shell auto-attaches to `main` session (configured in `~/.config/zsh/init.zsh`)
-2. **While Working**: Session auto-saves every 15 minutes
-3. **On Restart**: Session auto-restores with all windows, panes, and programs
+1. **While Working**: Session auto-saves every 15 minutes
+2. **On Restart**: Session auto-restores with all windows, panes, and programs
 
 ### Quick Test
 
@@ -37,13 +36,14 @@ Ctrl+s Ctrl+s
 # 3. Exit tmux completely
 exit  # in all panes
 
-# 4. Start new terminal
-# Tmux auto-attaches to main and restores your layout
+# 4. Start tmux again
+tmux
+# Your layout will be automatically restored
 ```
 
 ## Overview
 
-This tmux configuration provides a modern, powerful setup with automatic session persistence, seamless vim integration, and nested tmux support for working on remote servers.
+This tmux configuration provides a modern, powerful setup with automatic session persistence and seamless vim integration.
 
 **Prefix Key**: `Ctrl+s` (instead of default `Ctrl+b`)
 
@@ -73,12 +73,10 @@ config/tmux/
 - **Shell History**: Command history is preserved across restarts
 - **Neovim Integration**: Neovim sessions are saved and restored
 - **Seamless Vim Navigation**: Navigate between vim splits and tmux panes with same keys
-- **Nested Tmux Support**: Automatic detection and configuration for remote sessions
-- **Visual Indicators**: Color-coded status bars for nested sessions
 
 ## Keybindings
 
-All commands use the prefix `Ctrl+s` (or `Ctrl+a` in nested tmux).
+All commands use the prefix `Ctrl+s`.
 
 ### Window Management
 
@@ -177,15 +175,6 @@ The following programs are configured to restore their state:
 - `ipython` - IPython interpreter
 - `vim` / `nvim` - Editors (default)
 
-### Integration with Zsh
-
-The dotfiles are configured to automatically attach to the `main` tmux session on shell startup (see `~/.config/zsh/init.zsh`).
-
-This means:
-1. When you open a terminal, it automatically attaches to the `main` session
-2. If the `main` session doesn't exist, it creates it
-3. The session state is automatically restored from last save
-4. You can restart your computer and resume where you left off
 
 ### Verify It's Working
 
@@ -207,91 +196,6 @@ ls -lah ~/.config/tmux/resurrect/
 # Delete all saved sessions
 rm -rf ~/.config/tmux/resurrect/*
 ```
-
-## Nested Tmux
-
-This tmux configuration automatically detects when it's running inside another tmux session (nested) and adjusts the prefix key accordingly.
-
-### How Nested Detection Works
-
-The detection uses `TMUX_NESTED` environment variable, which is automatically set in two ways:
-
-1. **SSH connection detection** (primary): If you connect via SSH, the system assumes you're in nested tmux and sets `TMUX_NESTED=1` automatically in `init.zsh`
-2. **Zsh wrapper function** (fallback): When you manually run `tmux` inside existing tmux, the wrapper function sets `TMUX_NESTED=1`
-
-### Prefix Keys by Level
-
-**Outer tmux (local machine):**
-- Prefix: `Ctrl+S`
-- Status bar: Dark gray background
-- All standard key bindings work
-- `TMUX_NESTED` is not set
-- No SSH connection detected
-
-**Inner tmux (remote server via SSH):**
-- Prefix: `Ctrl+A`
-- Status bar: Dark red background (visual indicator)
-- All standard key bindings work with Ctrl+A prefix
-- `TMUX_NESTED=1` is automatically set when SSH connection is detected
-
-### Visual Indicators
-
-- **Dark gray status bar** = Outer tmux (local machine)
-- **Dark red status bar** = Inner tmux (nested session, e.g., SSH)
-
-This color coding helps you immediately know which tmux level you're controlling.
-
-### Common Commands by Level
-
-**Outer tmux (local):**
-```
-Ctrl+S c          - Create new window
-Ctrl+S d          - Detach from session
-Ctrl+S s          - Session selector
-Ctrl+S \          - Split horizontal
-Ctrl+S -          - Split vertical
-```
-
-**Inner tmux (remote):**
-```
-Ctrl+A c          - Create new window
-Ctrl+A d          - Detach from session
-Ctrl+A s          - Session selector
-Ctrl+A \          - Split horizontal
-Ctrl+A -          - Split vertical
-```
-
-### Sending Prefix Keys
-
-If you need to send the prefix key to the outer tmux when inside nested:
-- `Ctrl+S Ctrl+S` - Sends Ctrl+S to outer tmux
-
-If you need to send prefix to inner tmux from outer:
-- `Ctrl+S Ctrl+A` - Sends Ctrl+A to inner tmux
-
-### Nested Tmux Tips
-
-1. **Start nested tmux manually** on remote server:
-   ```bash
-   ssh server
-   tmux  # The wrapper function will automatically set TMUX_NESTED=1
-   ```
-
-2. **Exit nested tmux** without closing SSH:
-   ```
-   Ctrl+A d  # Detach from inner tmux
-   ```
-
-3. **Use prefix+s** for session selector in both outer and inner tmux
-
-4. **Check if you're in nested tmux:**
-   ```bash
-   echo $TMUX_NESTED  # Should be "1" in nested, empty in outer
-   ```
-
-5. **Quick reference card:**
-   - Local machine: Think "**S**ystem" = Ctrl+**S**
-   - Remote machine: Think "**A**way" = Ctrl+**A**
 
 ## Plugins
 
@@ -379,25 +283,6 @@ tmux show-options -g | grep resurrect-capture-pane-contents
 # Should show: @resurrect-capture-pane-contents on
 ```
 
-### Nested Tmux Prefix Issues
-
-**Problem**: After reloading config, Ctrl+S doesn't work (only Ctrl+A works)
-
-This happens if you reload tmux config while already inside tmux.
-
-**Solution 1: Restart tmux (recommended)**
-```bash
-exit  # or Ctrl+A d (if you reloaded and have Ctrl+A)
-tmux  # Start again - Ctrl+S should work correctly
-```
-
-**Solution 2: Quick fix without restarting**
-```bash
-tmux set -g prefix C-s
-tmux bind C-s send-prefix
-tmux set -g status-style "bg=colour235,fg=colour250"
-```
-
 ## Configuration Customization
 
 To modify session persistence settings, edit `~/.dotfiles/config/tmux/tmux.conf`:
@@ -424,4 +309,3 @@ tmux source-file ~/.config/tmux/tmux.conf
 - [tmux-resurrect documentation](https://github.com/tmux-plugins/tmux-resurrect/blob/master/docs/restoring_programs.md)
 - [tmux-continuum documentation](https://github.com/tmux-plugins/tmux-continuum/blob/master/docs/automatic_start.md)
 - Main tmux config: `~/.config/tmux/tmux.conf`
-- Zsh integration: `~/.config/zsh/init.zsh`
