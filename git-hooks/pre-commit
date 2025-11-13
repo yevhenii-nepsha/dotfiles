@@ -1,0 +1,245 @@
+#!/bin/bash
+# =============================================================================
+# Git Pre-Commit Security Scanner
+# =============================================================================
+# Prevents committing sensitive data and security issues
+# Auto-installed via dotfiles setup
+
+# Colors for output
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
+NC='\033[0m' # No Color
+
+echo -e "${BLUE}🔍 Running security checks...${NC}"
+
+# =============================================================================
+# Configuration
+# =============================================================================
+
+# Files to always exclude from scanning
+EXCLUDE_PATTERNS=(
+    "SECURITY.md"
+    ".env.example"
+    ".gitignore"
+    "docs/Troubleshooting.md"  # Contains example configs
+    "git-hooks/"  # Git hooks contain security patterns by design
+    ".git/hooks/"  # Git hooks directory
+)
+
+# Sensitive patterns to detect (pattern_name|pattern)
+PATTERNS=(
+    # API Keys and Tokens - simplified for BSD grep
+    'API_KEY|(api_key|apikey|api-key)[[:space:]]*[:=][[:space:]]*["\047][a-zA-Z0-9]{20,}'
+    'TOKEN|(token|auth_token|auth-token)[[:space:]]*[:=][[:space:]]*["\047][a-zA-Z0-9]{20,}'
+    'SECRET|(secret|api_secret|api-secret)[[:space:]]*[:=][[:space:]]*["\047][a-zA-Z0-9]{20,}'
+    'PASSWORD|(password|passwd)[[:space:]]*[:=][[:space:]]*["\047].{8,}'
+
+    # Private Keys
+    'PRIVATE_KEY|BEGIN (RSA|DSA|EC|OPENSSH) PRIVATE KEY'
+    'PEM_KEY|BEGIN.*PRIVATE KEY'
+
+    # GitHub/GitLab Tokens
+    'GITHUB_TOKEN|ghp_[a-zA-Z0-9]{36}'
+    'GITHUB_PAT|github_pat_[a-zA-Z0-9_]{82}'
+    'GITLAB_TOKEN|glpat-[a-zA-Z0-9_-]{20,}'
+
+    # Cloud Provider Keys
+    'AWS_KEY|AKIA[0-9A-Z]{16}'
+    'AWS_SECRET|aws_secret_access_key'
+
+    # Specific leaked credentials (from your repo)
+    'LASTFM_KEY|160e164612a44fd9f55e8c2cb62b5362'
+    'LASTFM_SECRET|e8ed24533ca7ae32a27885b4eadd5f39'
+
+    # Personal Information (only in additions, not deletions)
+    'DOMAIN|^\+.*sdz7\.net'
+    'IP_ADDRESS|^\+.*192\.168\.1\.22'
+    'USERNAME_PROMETHEUS|^\+.*(prometheus@|/Users/prometheus/)'
+    'USERNAME_ZHEKA|^\+.*/Users/zheka/'
+)
+
+# =============================================================================
+# Helper Functions
+# =============================================================================
+
+should_exclude() {
+    local file="$1"
+    for pattern in "${EXCLUDE_PATTERNS[@]}"; do
+        if [[ "$file" == *"$pattern"* ]]; then
+            return 0  # Should exclude
+        fi
+    done
+    return 1  # Should not exclude
+}
+
+# =============================================================================
+# Main Scanning Logic
+# =============================================================================
+
+errors=0
+warnings=0
+
+# Get list of staged files
+staged_files=$(git diff --cached --name-only --diff-filter=ACM)
+
+if [[ -z "$staged_files" ]]; then
+    echo -e "${YELLOW}⚠️  No staged files to check${NC}"
+    exit 0
+fi
+
+# Scan each staged file
+for file in $staged_files; do
+    # Skip excluded files
+    if should_exclude "$file"; then
+        continue
+    fi
+
+    # Skip binary files
+    if git diff --cached --numstat "$file" | grep -q '^-'; then
+        continue
+    fi
+
+    # Get staged content
+    content=$(git diff --cached "$file")
+
+    # Check each pattern
+    for pattern_entry in "${PATTERNS[@]}"; do
+        pattern_name="${pattern_entry%%|*}"
+        pattern="${pattern_entry#*|}"
+
+        if echo "$content" | grep -qE "$pattern"; then
+            echo -e "${RED}❌ SECURITY ISSUE: $pattern_name detected${NC}"
+            echo -e "   File: ${YELLOW}$file${NC}"
+            echo -e "   Pattern: $pattern_name"
+            echo ""
+            echo -e "   ${RED}Matched content:${NC}"
+            echo "$content" | grep -E "$pattern" --color=always | head -5
+            echo ""
+            ((errors++))
+        fi
+    done
+done
+
+# =============================================================================
+# Additional Checks
+# =============================================================================
+
+# Check for hardcoded IPs (excluding localhost and examples)
+for file in $staged_files; do
+    if should_exclude "$file"; then
+        continue
+    fi
+
+    content=$(git diff --cached "$file")
+
+    # Look for IPs that are not localhost, RFC1918 examples, or in comments
+    if echo "$content" | grep -E '^\+.*[^0-9](([0-9]{1,3}\.){3}[0-9]{1,3})[^0-9]' | \
+       grep -vE '127\.0\.0\.1|0\.0\.0\.0|255\.255\.255\.255|localhost|example|172\.28\.0\.0' > /dev/null; then
+        echo -e "${YELLOW}⚠️  WARNING: Potential IP address detected${NC}"
+        echo -e "   File: ${YELLOW}$file${NC}"
+        echo -e "   Review: Make sure this is not a private IP"
+        echo ""
+        ((warnings++))
+    fi
+done
+
+# Check for .env files (should never be committed)
+for file in $staged_files; do
+    if [[ "$file" == *".env" ]] && [[ "$file" != *".env.example" ]]; then
+        echo -e "${RED}❌ CRITICAL: .env file detected${NC}"
+        echo -e "   File: ${YELLOW}$file${NC}"
+        echo -e "   .env files should NEVER be committed"
+        echo ""
+        ((errors++))
+    fi
+done
+
+# Check for backup files
+for file in $staged_files; do
+    if [[ "$file" == *.bak ]] || [[ "$file" == *~ ]]; then
+        echo -e "${YELLOW}⚠️  WARNING: Backup file detected${NC}"
+        echo -e "   File: ${YELLOW}$file${NC}"
+        echo -e "   Backup files should typically be gitignored"
+        echo ""
+        ((warnings++))
+    fi
+done
+
+# =============================================================================
+# Python Code Quality (ruff)
+# =============================================================================
+
+# Get staged Python files
+python_files=$(echo "$staged_files" | grep '\.py$' || true)
+
+if [[ -n "$python_files" ]]; then
+    echo ""
+    echo -e "${BLUE}🐍 Checking Python code quality...${NC}"
+
+    # Check if ruff is installed
+    if ! command -v ruff &> /dev/null; then
+        echo -e "${YELLOW}⚠️  ruff not found - skipping Python checks${NC}"
+        echo -e "   Install: pip install ruff"
+    else
+        ruff_errors=0
+
+        # Run ruff check (linting)
+        echo -e "${BLUE}  → Running ruff check...${NC}"
+        if ! echo "$python_files" | xargs ruff check --quiet 2>&1; then
+            echo -e "${RED}❌ ruff check failed${NC}"
+            echo -e "   Fix with: ruff check --fix <file>"
+            echo ""
+            ((ruff_errors++))
+        fi
+
+        # Run ruff format check (formatting)
+        echo -e "${BLUE}  → Running ruff format check...${NC}"
+        if ! echo "$python_files" | xargs ruff format --check --quiet 2>&1; then
+            echo -e "${RED}❌ ruff format failed${NC}"
+            echo -e "   Fix with: ruff format <file>"
+            echo ""
+            ((ruff_errors++))
+        fi
+
+        # Add ruff errors to total
+        if [[ $ruff_errors -gt 0 ]]; then
+            echo -e "${RED}❌ Found $ruff_errors Python code quality issue(s)${NC}"
+            ((errors += ruff_errors))
+        else
+            echo -e "${GREEN}✅ Python code quality checks passed${NC}"
+        fi
+    fi
+fi
+
+# =============================================================================
+# Results
+# =============================================================================
+
+echo ""
+echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+
+if [[ $errors -eq 0 ]] && [[ $warnings -eq 0 ]]; then
+    echo -e "${GREEN}✅ All checks passed - no issues found${NC}"
+    exit 0
+elif [[ $errors -gt 0 ]]; then
+    echo -e "${RED}❌ COMMIT BLOCKED: $errors issue(s) found${NC}"
+    if [[ $warnings -gt 0 ]]; then
+        echo -e "${YELLOW}⚠️  Also found $warnings warning(s)${NC}"
+    fi
+    echo ""
+    echo -e "${YELLOW}To fix:${NC}"
+    echo "  • Review security issues (if any) and remove sensitive data"
+    echo "  • Fix Python code quality issues with: ruff check --fix && ruff format"
+    echo "  • Update .gitignore if needed"
+    echo ""
+    echo -e "${YELLOW}To bypass (USE WITH CAUTION):${NC}"
+    echo "  git commit --no-verify"
+    echo ""
+    exit 1
+else
+    echo -e "${YELLOW}⚠️  Found $warnings warning(s) but no critical issues${NC}"
+    echo -e "${GREEN}✅ Proceeding with commit${NC}"
+    exit 0
+fi
