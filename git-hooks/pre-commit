@@ -185,27 +185,35 @@ if [[ -n "$python_files" ]]; then
     else
         ruff_errors=0
 
-        # Run ruff check (linting)
-        echo -e "${BLUE}  → Running ruff check...${NC}"
-        if ! echo "$python_files" | xargs ruff check --quiet 2>&1; then
-            echo -e "${RED}❌ ruff check failed${NC}"
-            echo -e "   Fix with: ruff check --fix <file>"
-            echo ""
-            ((ruff_errors++))
+        # Run ruff check with auto-fix
+        echo -e "${BLUE}  → Running ruff check --fix...${NC}"
+        if echo "$python_files" | xargs ruff check --fix --quiet 2>&1; then
+            echo -e "${GREEN}  ✓ Auto-fixed linting issues${NC}"
+        else
+            echo -e "${YELLOW}  ⚠ Some issues auto-fixed, checking for remaining...${NC}"
         fi
 
-        # Run ruff format check (formatting)
-        echo -e "${BLUE}  → Running ruff format check...${NC}"
-        if ! echo "$python_files" | xargs ruff format --check --quiet 2>&1; then
-            echo -e "${RED}❌ ruff format failed${NC}"
-            echo -e "   Fix with: ruff format <file>"
+        # Run ruff format (auto-format)
+        echo -e "${BLUE}  → Running ruff format...${NC}"
+        echo "$python_files" | xargs ruff format --quiet 2>&1
+        echo -e "${GREEN}  ✓ Code formatted${NC}"
+
+        # Re-stage formatted files
+        echo "$python_files" | xargs git add
+        echo -e "${GREEN}  ✓ Re-staged formatted files${NC}"
+
+        # Final check for unfixable issues
+        echo -e "${BLUE}  → Final validation...${NC}"
+        if ! echo "$python_files" | xargs ruff check --quiet 2>&1; then
+            echo -e "${RED}❌ Unfixable issues remain${NC}"
+            echo -e "   Review the errors above and fix manually"
             echo ""
             ((ruff_errors++))
         fi
 
         # Add ruff errors to total
         if [[ $ruff_errors -gt 0 ]]; then
-            echo -e "${RED}❌ Found $ruff_errors Python code quality issue(s)${NC}"
+            echo -e "${RED}❌ Found $ruff_errors unfixable issue(s)${NC}"
             ((errors += ruff_errors))
         else
             echo -e "${GREEN}✅ Python code quality checks passed${NC}"
