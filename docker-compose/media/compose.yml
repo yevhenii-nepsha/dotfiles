@@ -61,10 +61,6 @@ services:
     ports:
       - "9180:9180"
     environment:
-      - SERVER_NAME=Navidrome
-      - SERVER_TYPE=navidrome
-      - SERVER_URL=http://navidrome:4533
-      - SERVER_LOCK=false
       - TZ=${TIMEZONE}
     networks:
       - media-network
