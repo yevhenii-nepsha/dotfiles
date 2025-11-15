@@ -357,14 +357,15 @@ If you see errors like `statfs /Volumes/...: no such file or directory`:
 # Check if /Volumes is accessible in VM
 podman machine ssh -- ls -la /Volumes
 
-# If not accessible, add the mount
+# If not accessible, you need to recreate the machine with volume mount
 podman machine stop
-podman machine set --volume /Volumes:/Volumes
+podman machine rm
+podman machine init --cpus 2 --memory 4096 --disk-size 100 --volume /Volumes:/Volumes
 podman machine start
-
-# Or run the setup script which does this automatically
-~/.dotfiles/scripts/setup-podman.sh
+brew services start podman
 ```
+
+**Note**: This requires recreating the machine because Podman doesn't support adding volumes to existing machines. Make sure to stop all containers first with `podman compose down`.
 
 This is required on macOS because Podman runs in a VM and needs explicit mounts for external drives.
 

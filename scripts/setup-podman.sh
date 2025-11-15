@@ -33,13 +33,16 @@ if podman machine list --format json 2>/dev/null | grep -q '"Name"'; then
     echo -e "${YELLOW}🔍 Checking if /Volumes is accessible in VM...${NC}"
     if ! podman machine ssh -- test -d /Volumes 2>/dev/null; then
         echo -e "${YELLOW}⚠️  /Volumes not mounted in Podman VM${NC}"
-        echo -e "${YELLOW}🔄 Stopping machine to add /Volumes mount...${NC}"
-        podman machine stop 2>/dev/null || true
-        echo -e "${YELLOW}🔄 Adding /Volumes mount...${NC}"
-        podman machine set --volume /Volumes:/Volumes
-        echo -e "${YELLOW}🔄 Starting machine...${NC}"
-        podman machine start
-        echo -e "${GREEN}✅ /Volumes mount added${NC}"
+        echo ""
+        echo -e "${RED}To add /Volumes mount, you need to recreate the machine:${NC}"
+        echo ""
+        echo "  podman machine stop"
+        echo "  podman machine rm"
+        echo "  podman machine init --cpus 2 --memory 4096 --disk-size 100 --volume /Volumes:/Volumes"
+        echo "  podman machine start"
+        echo "  brew services start podman"
+        echo ""
+        exit 1
     else
         echo -e "${GREEN}✅ /Volumes is accessible in VM${NC}"
     fi
