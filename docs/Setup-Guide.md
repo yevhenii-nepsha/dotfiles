@@ -71,7 +71,7 @@ The installation will:
 - Languages: rust, node, python
 
 **GUI Applications** (from `local.Brewfile`):
-- Development: Docker Desktop, Claude Code CLI
+- Development: Claude Code CLI, Podman (Docker alternative)
 - Browsers: Brave Browser, Google Chrome
 - Productivity: 1Password, Raycast
 - Media: Spotify, IINA
@@ -194,7 +194,7 @@ If updating from an old dotfiles configuration with unnecessary packages:
 **What stays on server:**
 - All CLI tools from `base.Brewfile`
 - Essential GUI (Ghostty, Brave Browser, 1Password)
-- Server tools (Jellyfin, Docker Desktop)
+- Server tools (Jellyfin, Podman)
 
 ### Server-Specific Configuration
 
@@ -227,7 +227,7 @@ For Docker service setup, see [Docker Services Documentation](Docker-Services.md
 
 **Server-Specific:**
 - Jellyfin media server
-- Docker Desktop (for services)
+- Podman (container engine for services)
 
 ## Maintenance
 
@@ -441,6 +441,7 @@ dotbot -c install.conf.yaml --only shell
 
 - **Configure Neovim**: See [Neovim Documentation](Neovim.md)
 - **Set up Tmux**: See [Tmux Documentation](Tmux.md)
+- **Configure Podman**: See [Podman Documentation](Podman.md)
 - **Configure Docker Services**: See [Docker Services](Docker-Services.md)
 - **Learn Git Workflow**: See [Git Workflow](Git-Workflow.md)
 - **Explore Scripts**: See [Scripts Reference](Scripts-Reference.md)

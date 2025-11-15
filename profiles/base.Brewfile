@@ -1,7 +1,7 @@
 # ============================================================================
 # Base Brewfile - Common packages for all machines
 # ============================================================================
-# This profile includes essential CLI tools, development tools, and Docker
+# This profile includes essential CLI tools, development tools, and Podman
 # that are needed on both local development machine and Mac Mini server.
 
 # ============================================================================
@@ -89,9 +89,14 @@ brew "xh"                            # Fast HTTP client (httpie alternative)
 brew "gnupg"                         # GNU Privacy Guard (GPG)
 
 # ============================================================================
+# CONTAINERS
+# ============================================================================
+brew "podman"                        # Container engine (Docker alternative)
+brew "podman-compose"                # Docker Compose compatibility for Podman
+
+# ============================================================================
 # APPLICATIONS - DEVELOPMENT TOOLS
 # ============================================================================
-cask "docker-desktop"                # Docker Desktop for macOS
 cask "claude-code"                   # Claude Code CLI tool
 
 # ============================================================================

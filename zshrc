@@ -13,6 +13,7 @@ source "${DOTFILES_DIR}/config/zsh/aliases.zsh"
 source "${DOTFILES_DIR}/config/zsh/functions.zsh"
 source "${DOTFILES_DIR}/config/zsh/downloads.zsh"
 source "${DOTFILES_DIR}/config/zsh/completions.zsh"
+source "${DOTFILES_DIR}/config/zsh/podman.zsh"
 
 # ============================================================================
 # End of configuration
