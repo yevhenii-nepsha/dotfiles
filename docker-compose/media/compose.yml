@@ -18,8 +18,8 @@ services:
       ND_SHAREURL: ${NAVIDROME_SHARE_URL}
       ND_ENABLESHARING: "true"
     volumes:
-      - "${NAVIDROME_DATA_PATH}:/data"
-      - "${MUSIC_LIBRARY_PATH}:/music:rw"
+      - "${NAVIDROME_DATA_PATH}:/data:U"
+      - "${MUSIC_LIBRARY_PATH}:/music:ro,U"
     networks:
       - media-network
 
@@ -40,8 +40,8 @@ services:
       # Security: disable UPnP/NAT-PMP
       - DOCKER_MODS=linuxserver/mods:universal-cron
     volumes:
-      - ${QBIT_CONFIG_PATH}:/config
-      - ${QBIT_DOWNLOADS_PATH}:/downloads
+      - ${QBIT_CONFIG_PATH}:/config:U
+      - ${QBIT_DOWNLOADS_PATH}:/downloads:U
     security_opt:
       - no-new-privileges:true
     networks:
