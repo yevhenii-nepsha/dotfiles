@@ -196,6 +196,9 @@ Default machine configuration (from `setup-podman.sh`):
 - **Memory**: 4GB
 - **Disk**: 100GB
 - **Mode**: Rootless
+- **Volumes**: `/Volumes:/Volumes` (for external drives)
+
+**Important for macOS**: Podman runs in a VM, so external drives in `/Volumes` must be explicitly mounted. The setup script handles this automatically.
 
 To customize:
 
@@ -345,6 +348,25 @@ podman info | grep rootless
 podman machine ssh
 id  # Check user inside machine
 ```
+
+### "no such file or directory" for /Volumes paths
+
+If you see errors like `statfs /Volumes/...: no such file or directory`:
+
+```bash
+# Check if /Volumes is accessible in VM
+podman machine ssh -- ls -la /Volumes
+
+# If not accessible, add the mount
+podman machine stop
+podman machine set --volume /Volumes:/Volumes
+podman machine start
+
+# Or run the setup script which does this automatically
+~/.dotfiles/scripts/setup-podman.sh
+```
+
+This is required on macOS because Podman runs in a VM and needs explicit mounts for external drives.
 
 ## Performance Tips
 

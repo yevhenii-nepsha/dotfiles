@@ -29,6 +29,21 @@ echo ""
 if podman machine list --format json 2>/dev/null | grep -q '"Name"'; then
     echo -e "${YELLOW}ℹ️  Podman machine already exists${NC}"
 
+    # Check if /Volumes is mounted
+    echo -e "${YELLOW}🔍 Checking if /Volumes is accessible in VM...${NC}"
+    if ! podman machine ssh -- test -d /Volumes 2>/dev/null; then
+        echo -e "${YELLOW}⚠️  /Volumes not mounted in Podman VM${NC}"
+        echo -e "${YELLOW}🔄 Stopping machine to add /Volumes mount...${NC}"
+        podman machine stop 2>/dev/null || true
+        echo -e "${YELLOW}🔄 Adding /Volumes mount...${NC}"
+        podman machine set --volume /Volumes:/Volumes
+        echo -e "${YELLOW}🔄 Starting machine...${NC}"
+        podman machine start
+        echo -e "${GREEN}✅ /Volumes mount added${NC}"
+    else
+        echo -e "${GREEN}✅ /Volumes is accessible in VM${NC}"
+    fi
+
     # Check if it's running
     if podman machine list --format json | grep -q '"Running":true'; then
         echo -e "${GREEN}✅ Podman machine is running${NC}"
@@ -44,10 +59,12 @@ else
     # Initialize with reasonable defaults for macOS
     # - 2 CPUs, 4GB RAM, 100GB disk
     # - rootful mode disabled (rootless is default and recommended)
+    # - Mount /Volumes for access to external drives
     podman machine init \
         --cpus 2 \
         --memory 4096 \
-        --disk-size 100
+        --disk-size 100 \
+        --volume /Volumes:/Volumes
 
     echo ""
     echo -e "${GREEN}✅ Podman machine initialized${NC}"
