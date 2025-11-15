@@ -260,9 +260,10 @@ podman-compose up -d      # Native Podman command
 
 Most compose files work without changes. Minor differences:
 
-1. **host.docker.internal** - Works in Podman 4.0+
-2. **Network names** - May differ slightly (use explicit names)
-3. **Volume permissions** - Same as Docker on macOS
+1. **depends_on** - May cause issues in Podman Compose. If you see "is not a valid container" errors, remove `depends_on` directives. Services will start in parallel and connect when ready.
+2. **host.docker.internal** - Works in Podman 4.0+
+3. **Network names** - May differ slightly (use explicit names)
+4. **Volume permissions** - Same as Docker on macOS
 
 ## Troubleshooting
 
@@ -293,6 +294,18 @@ echo $DOCKER_HOST
 
 # Verify socket exists
 ls -la ~/.local/share/containers/podman/machine/
+```
+
+### "is not a valid container" dependency errors
+
+If you see errors like `"navidrome" is not a valid container, cannot be used as a dependency`:
+
+```bash
+# This is a known Podman Compose issue with depends_on
+# Solution: Remove depends_on from compose.yml
+
+# Services will start in parallel and connect when ready
+# This works fine for most services that have retry logic
 ```
 
 ### Docker Compose not working

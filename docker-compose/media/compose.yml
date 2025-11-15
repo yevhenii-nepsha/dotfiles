@@ -64,8 +64,6 @@ services:
       - TZ=${TIMEZONE}
     networks:
       - media-network
-    depends_on:
-      - navidrome
 
   tunnel:
     image: cloudflare/cloudflared:latest
@@ -74,8 +72,6 @@ services:
     command: tunnel --no-autoupdate run --token ${TUNNEL_TOKEN}
     networks:
       - media-network
-    depends_on:
-      - navidrome
 
 networks:
   media-network:
