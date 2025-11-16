@@ -196,9 +196,11 @@ Default machine configuration (from `setup-podman.sh`):
 - **Memory**: 4GB
 - **Disk**: 100GB
 - **Mode**: Rootless
-- **Volumes**: `/Volumes:/Volumes` (for external drives)
+- **Volumes**:
+  - `/Volumes:/Volumes` (for external drives)
+  - `/Users:/Users` (for home directories)
 
-**Important for macOS**: Podman runs in a VM, so external drives in `/Volumes` must be explicitly mounted. The setup script handles this automatically.
+**Important for macOS**: Podman runs in a VM, so both external drives and home directories must be explicitly mounted. The setup script handles this automatically.
 
 To customize:
 
@@ -349,25 +351,35 @@ podman machine ssh
 id  # Check user inside machine
 ```
 
-### "no such file or directory" for /Volumes paths
+### "no such file or directory" for paths
 
-If you see errors like `statfs /Volumes/...: no such file or directory`:
+If you see errors like `statfs /Volumes/... or /Users/...: no such file or directory`:
 
 ```bash
-# Check if /Volumes is accessible in VM
+# Check if required directories are accessible in VM
 podman machine ssh -- ls -la /Volumes
+podman machine ssh -- ls -la /Users
 
-# If not accessible, you need to recreate the machine with volume mount
+# If not accessible, recreate the machine with both volume mounts
 podman machine stop
 podman machine rm
-podman machine init --cpus 2 --memory 4096 --disk-size 100 --volume /Volumes:/Volumes
+podman machine init \
+    --cpus 2 \
+    --memory 4096 \
+    --disk-size 100 \
+    --volume /Volumes:/Volumes \
+    --volume /Users:/Users
 podman machine start
 brew services start podman
 ```
 
 **Note**: This requires recreating the machine because Podman doesn't support adding volumes to existing machines. Make sure to stop all containers first with `podman compose down`.
 
-This is required on macOS because Podman runs in a VM and needs explicit mounts for external drives.
+**Why both mounts are needed:**
+- `/Volumes` - for external drives (e.g., `/Volumes/archive/music`)
+- `/Users` - for home directories (e.g., `/Users/username/.config/navidrome`)
+
+This is required on macOS because Podman runs in a VM and needs explicit mounts for any host directories.
 
 ## Performance Tips
 

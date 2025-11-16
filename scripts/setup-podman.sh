@@ -29,22 +29,37 @@ echo ""
 if podman machine list --format json 2>/dev/null | grep -q '"Name"'; then
     echo -e "${YELLOW}ℹ️  Podman machine already exists${NC}"
 
-    # Check if /Volumes is mounted
-    echo -e "${YELLOW}🔍 Checking if /Volumes is accessible in VM...${NC}"
+    # Check if required directories are mounted
+    echo -e "${YELLOW}🔍 Checking if /Volumes and /Users are accessible in VM...${NC}"
+
+    VOLUMES_MISSING=false
+    USERS_MISSING=false
+
     if ! podman machine ssh -- test -d /Volumes 2>/dev/null; then
         echo -e "${YELLOW}⚠️  /Volumes not mounted in Podman VM${NC}"
+        VOLUMES_MISSING=true
+    else
+        echo -e "${GREEN}✅ /Volumes is accessible in VM${NC}"
+    fi
+
+    if ! podman machine ssh -- test -d /Users 2>/dev/null; then
+        echo -e "${YELLOW}⚠️  /Users not mounted in Podman VM${NC}"
+        USERS_MISSING=true
+    else
+        echo -e "${GREEN}✅ /Users is accessible in VM${NC}"
+    fi
+
+    if [ "$VOLUMES_MISSING" = true ] || [ "$USERS_MISSING" = true ]; then
         echo ""
-        echo -e "${RED}To add /Volumes mount, you need to recreate the machine:${NC}"
+        echo -e "${RED}Required volume mounts are missing. Recreate the machine:${NC}"
         echo ""
         echo "  podman machine stop"
         echo "  podman machine rm"
-        echo "  podman machine init --cpus 2 --memory 4096 --disk-size 100 --volume /Volumes:/Volumes"
+        echo "  podman machine init --cpus 2 --memory 4096 --disk-size 100 --volume /Volumes:/Volumes --volume /Users:/Users"
         echo "  podman machine start"
         echo "  brew services start podman"
         echo ""
         exit 1
-    else
-        echo -e "${GREEN}✅ /Volumes is accessible in VM${NC}"
     fi
 
     # Check if it's running
@@ -62,12 +77,13 @@ else
     # Initialize with reasonable defaults for macOS
     # - 2 CPUs, 4GB RAM, 100GB disk
     # - rootful mode disabled (rootless is default and recommended)
-    # - Mount /Volumes for access to external drives
+    # - Mount /Volumes for external drives and /Users for home directories
     podman machine init \
         --cpus 2 \
         --memory 4096 \
         --disk-size 100 \
-        --volume /Volumes:/Volumes
+        --volume /Volumes:/Volumes \
+        --volume /Users:/Users
 
     echo ""
     echo -e "${GREEN}✅ Podman machine initialized${NC}"
