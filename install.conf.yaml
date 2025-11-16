@@ -111,6 +111,12 @@
       stdout: true
       stderr: true
 
+    # === Podman Setup ===
+    - description: "Initializing Podman machine and configuring auto-start"
+      command: ./scripts/setup-podman.sh
+      stdout: true
+      stderr: true
+
     # === Tmux Plugins Setup ===
     - description: "Setting up tmux plugins (TPM, resurrect, continuum)"
       command: ./scripts/setup-tmux-plugins.sh

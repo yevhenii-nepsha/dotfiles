@@ -59,7 +59,7 @@ Support for different machine types:
 - Terminal: tmux with session persistence
 - Modern CLI: eza, bat, ripgrep, fd, fzf, zoxide
 - Git: lazygit, gh, git-delta
-- Development: Docker, Claude Code CLI
+- Development: Podman (Docker alternative), Claude Code CLI
 
 **Server Services:**
 - Navidrome (music streaming)

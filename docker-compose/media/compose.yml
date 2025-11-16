@@ -4,7 +4,6 @@ services:
   navidrome:
     image: deluan/navidrome:latest
     container_name: navidrome
-    user: 1000:1000
     restart: unless-stopped
     ports:
       - "4533:4533"
@@ -19,8 +18,8 @@ services:
       ND_SHAREURL: ${NAVIDROME_SHARE_URL}
       ND_ENABLESHARING: "true"
     volumes:
-      - "${NAVIDROME_DATA_PATH}:/data"
-      - "${MUSIC_LIBRARY_PATH}:/music:rw"
+      - "${NAVIDROME_DATA_PATH}:/data:U"
+      - "${MUSIC_LIBRARY_PATH}:/music:ro,U"
     networks:
       - media-network
 
@@ -41,8 +40,8 @@ services:
       # Security: disable UPnP/NAT-PMP
       - DOCKER_MODS=linuxserver/mods:universal-cron
     volumes:
-      - ${QBIT_CONFIG_PATH}:/config
-      - ${QBIT_DOWNLOADS_PATH}:/downloads
+      - ${QBIT_CONFIG_PATH}:/config:U
+      - ${QBIT_DOWNLOADS_PATH}:/downloads:U
     security_opt:
       - no-new-privileges:true
     networks:
@@ -64,8 +63,6 @@ services:
       - TZ=${TIMEZONE}
     networks:
       - media-network
-    depends_on:
-      - navidrome
 
   tunnel:
     image: cloudflare/cloudflared:latest
@@ -74,8 +71,6 @@ services:
     command: tunnel --no-autoupdate run --token ${TUNNEL_TOKEN}
     networks:
       - media-network
-    depends_on:
-      - navidrome
 
 networks:
   media-network:
