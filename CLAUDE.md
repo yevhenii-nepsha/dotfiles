@@ -79,6 +79,27 @@ IMPORTANT: Automatically read reference files just-in-time when context is neede
 **How to load:**
 Use the Read tool to load these files on-demand, NOT upfront. This keeps token usage efficient and context relevant.
 
+## External Knowledge & Research
+
+IMPORTANT: Verify information about libraries, APIs, and third-party code when uncertain.
+
+**When your knowledge might be outdated:**
+- Library versions, API endpoints, or syntax have changed
+- Using newer libraries or frameworks (released after training cutoff)
+- User mentions specific version numbers that seem recent
+- Documentation or best practices might have evolved
+
+**Actions to take:**
+- Use WebSearch tool to verify current standards and best practices
+- Check official documentation for latest API signatures
+- Search for recent examples and common patterns
+- Confirm breaking changes or deprecations
+
+**DO NOT:**
+- Assume your training data reflects current state
+- Provide outdated code patterns without verification
+- Skip research when uncertain about version compatibility
+
 ## Workflow - Before Starting Work
 
 IMPORTANT: When user requests implementation tasks:
@@ -100,6 +121,11 @@ For detailed planning structure, see `.claude/reference/workflow-patterns.md`
 - Test each component before moving to next
 - Keep changes atomic
 - Use TodoWrite tool for progress tracking
+
+**Documentation updates:**
+- After completing feature/fix: update local documentation with new implementation details
+- When discovering new project information: update existing docs to provide full context for future sessions
+- Document architectural decisions, patterns, and gotchas in project-specific `.claude/` files
 
 For detailed workflow patterns, see `.claude/reference/workflow-patterns.md`
 
