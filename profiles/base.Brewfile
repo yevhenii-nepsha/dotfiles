@@ -103,7 +103,7 @@ cask "claude-code"                   # Claude Code CLI tool
 # APPLICATIONS - ESSENTIAL GUI (both machines)
 # ============================================================================
 cask "ghostty"                       # Fast terminal emulator
-cask "brave-browser"                 # Privacy-focused browser
+cask "zen"                           # Privacy-focused browser
 cask "1password"                     # Password manager
 cask "keka"                          # Archive manager
 cask "nordvpn"                       # VPN client
