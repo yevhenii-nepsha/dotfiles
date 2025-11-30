@@ -104,12 +104,6 @@ See [Setup Guide](docs/Setup-Guide.md) for complete package lists.
 └── CLAUDE.md        # Claude Code instructions
 ```
 
-## Version
-
-**Current version:** 2.0.0
-
-See [CHANGELOG.md](CHANGELOG.md) for version history.
-
 ## License
 
 Personal dotfiles - feel free to fork and adapt for your own use.

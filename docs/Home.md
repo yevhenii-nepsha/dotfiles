@@ -109,12 +109,6 @@ Welcome to the comprehensive documentation for this dotfiles repository. This do
 - Include examples and code blocks
 - Add troubleshooting sections where applicable
 
-## Version Information
-
-Current dotfiles version: **2.0.0**
-
-For version history and changelog, see [CHANGELOG.md](../CHANGELOG.md)
-
 ## Getting Help
 
 1. Check the relevant documentation page

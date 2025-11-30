@@ -450,4 +450,3 @@ dotbot -c install.conf.yaml --only shell
 
 - [Troubleshooting Guide](Troubleshooting.md) - Common issues and solutions
 - [Home](Home.md) - Documentation index
-- [CHANGELOG](../CHANGELOG.md) - Version history
