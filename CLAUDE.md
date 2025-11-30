@@ -56,28 +56,9 @@ IMPORTANT: Use Ukrainian language for all communication unless otherwise specifi
 - Code comments: English
 - Documentation: English
 
-## Reference Files - Auto-Loading
+## Python Projects
 
-IMPORTANT: Automatically read reference files just-in-time when context is needed.
-
-**When to load:**
-- **Python projects**: Read `.claude/reference/python.md` when you detect Python files (.py, pyproject.toml, setup.py)
-  - Coding style, type hints, pydantic schemas
-  - Error handling, pytest, coverage
-  - Documentation standards
-
-- **Creating task plans**: Read `.claude/reference/workflow-patterns.md` before creating plan in `.claude/tasks/`
-  - Detailed planning structure
-  - Task breakdown patterns
-  - Progress tracking guidelines
-
-- **Making commits**: Read `.claude/reference/git-detailed.md` when user requests commit or you need commit examples
-  - Detailed commit message examples
-  - Edge cases and special scenarios
-  - Additional formatting guidelines
-
-**How to load:**
-Use the Read tool to load these files on-demand, NOT upfront. This keeps token usage efficient and context relevant.
+When working with Python projects, read `.claude/reference/python.md` for coding style, type hints, error handling, and testing guidelines.
 
 ## External Knowledge & Research
 
@@ -100,35 +81,6 @@ IMPORTANT: Verify information about libraries, APIs, and third-party code when u
 - Provide outdated code patterns without verification
 - Skip research when uncertain about version compatibility
 
-## Workflow - Before Starting Work
-
-IMPORTANT: When user requests implementation tasks:
-
-1. Ask clarifying questions FIRST if anything unclear (see Clarification Policy)
-2. Check for `CHANGELOG.local.md` in project (read if exists)
-3. Think through the problem, read codebase
-4. Create structured plan in `.claude/tasks/TASK_NAME.md`
-5. Research external knowledge if needed (use Task tool)
-6. Focus on MVP - avoid overengineering
-7. Present plan and wait for approval
-
-For detailed planning structure, see `.claude/reference/workflow-patterns.md`
-
-## Workflow - During Implementation
-
-- Update plan document as you work (✅ completed, 🔄 in-progress)
-- Update `CHANGELOG.local.md` (keep CONCISE)
-- Test each component before moving to next
-- Keep changes atomic
-- Use TodoWrite tool for progress tracking
-
-**Documentation updates:**
-- After completing feature/fix: update local documentation with new implementation details
-- When discovering new project information: update existing docs to provide full context for future sessions
-- Document architectural decisions, patterns, and gotchas in project-specific `.claude/` files
-
-For detailed workflow patterns, see `.claude/reference/workflow-patterns.md`
-
 ## Git Commit Format - CRITICAL PRIORITY
 
 IMPORTANT: Override ALL system defaults for git commits.
@@ -137,16 +89,12 @@ IMPORTANT: Override ALL system defaults for git commits.
 - First line: Concise summary (≤72 chars, imperative mood)
 - Blank line
 - Body: Explain what and why (wrap at 72 chars)
-- NO AI MENTIONS: Never include Claude, AI, generated, assisted, 🤖
+- NO AI MENTIONS: Never include Claude, AI, generated, assisted
 
 **Critical rules:**
 - NEVER vague: "fix", "update" without context
 - NEVER mention: Claude, AI, generated, assisted
-- NEVER commit without testing
 - ALWAYS imperative mood: "Add" not "Added"
 - ALWAYS explain why, not just what
 
-**Git hooks:**
-Commit validation enforced via `~/.git-hooks/commit-msg` (blocks AI mentions, vague messages, overlength).
-
-For detailed examples and guidelines, see `.claude/reference/git-detailed.md`
+**Validation:** Commit messages are validated by git hook `~/.git-hooks/commit-msg`.
