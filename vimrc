@@ -1,4 +1,9 @@
-
+" ========================================
+" FALLBACK VIM CONFIGURATION
+" ========================================
+" This config is for systems without neovim installed.
+" Primary editor config is in ~/.config/nvim/
+"
 " ========================================
 " Options
 " ========================================
