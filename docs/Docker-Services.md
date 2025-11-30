@@ -2,8 +2,6 @@
 
 Docker Compose configurations for server services. These are automatically symlinked to `~/docker-compose/` when using the `server` profile.
 
-**Note:** This setup uses **Podman** as the container engine (Docker Desktop alternative). All `docker` commands are aliased to `podman`. See [Podman.md](Podman.md) for details.
-
 ## Services
 
 ### Media Stack (`media/`)

@@ -79,7 +79,6 @@
     # === Terminal Tools ===
     ~/.config/yazi: config/yazi
     ~/.config/bat: config/bat
-    ~/.config/zk: config/zk
 
     # === Specific Files (not full directories) ===
     ~/.config/tmux/tmux.conf:
@@ -108,12 +107,6 @@
     # === Homebrew Setup ===
     - description: "Installing and updating Homebrew packages"
       command: ./setup_homebrew.zsh
-      stdout: true
-      stderr: true
-
-    # === Podman Setup ===
-    - description: "Initializing Podman machine and configuring auto-start"
-      command: ./scripts/setup-podman.sh
       stdout: true
       stderr: true
 
@@ -176,7 +169,6 @@
         echo "🚀 Your development environment is ready!"
         echo ""
       stdout: true
-
 # ============================================================================
 # Configuration Notes:
 #
@@ -193,3 +185,4 @@
 # - dotbot -c install.conf.yaml --only link
 # - dotbot -c install.conf.yaml --only create
 # ============================================================================
+

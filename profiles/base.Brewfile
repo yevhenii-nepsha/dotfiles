@@ -1,7 +1,7 @@
 # ============================================================================
 # Base Brewfile - Common packages for all machines
 # ============================================================================
-# This profile includes essential CLI tools, development tools, and Podman
+# This profile includes essential CLI tools, development tools, and Docker
 # that are needed on both local development machine and Mac Mini server.
 
 # ============================================================================
@@ -91,8 +91,7 @@ brew "gnupg"                         # GNU Privacy Guard (GPG)
 # ============================================================================
 # CONTAINERS
 # ============================================================================
-brew "podman"                        # Container engine (Docker alternative)
-brew "podman-compose"                # Docker Compose compatibility for Podman
+cask "docker"                        # Docker Desktop (container engine + GUI)
 
 # ============================================================================
 # APPLICATIONS - DEVELOPMENT TOOLS
