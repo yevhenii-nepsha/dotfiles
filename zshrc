@@ -67,6 +67,11 @@ alias cat="bat --style=plain --paging=never"
 # Editor
 alias ze="nvim ~/.dotfiles/zshrc"
 
+# SSH with kitty terminfo (only in kitty terminal)
+if [[ -n "$KITTY_WINDOW_ID" ]]; then
+  alias ssh="kitten ssh"
+fi
+
 # Python
 alias pvd="deactivate"
 
