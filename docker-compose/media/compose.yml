@@ -29,9 +29,9 @@ services:
     restart: unless-stopped
     ports:
       # Bind to localhost only for security
-      - "127.0.0.1:8080:8080"  # Web UI
-      - "6881:6881"            # TCP incoming connections
-      - "6881:6881/udp"        # UDP incoming connections
+      - "127.0.0.1:8080:8080" # Web UI
+      - "6881:6881" # TCP incoming connections
+      - "6881:6881/udp" # UDP incoming connections
     environment:
       - PUID=${QBIT_PUID}
       - PGID=${QBIT_PGID}
@@ -52,17 +52,6 @@ services:
       timeout: 10s
       retries: 3
       start_period: 40s
-
-  feishin:
-    image: ghcr.io/jeffvli/feishin:latest
-    container_name: feishin
-    restart: unless-stopped
-    ports:
-      - "9180:9180"
-    environment:
-      - TZ=${TIMEZONE}
-    networks:
-      - media-network
 
   tunnel:
     image: cloudflare/cloudflared:latest
