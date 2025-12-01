@@ -26,6 +26,7 @@ return {
     opts = {
         keymap = {
             preset = "super-tab",
+            ["<C-k>"] = { "show_signature", "hide_signature", "fallback" },
         },
 
         appearance = {
@@ -48,6 +49,10 @@ return {
 
         snippets = { preset = "luasnip" },
         fuzzy = { implementation = "lua" },
-        signature = { enabled = true },
+        signature = {
+            enabled = true,
+            trigger = { enabled = false },
+            window = { show_documentation = true },
+        },
     },
 }
