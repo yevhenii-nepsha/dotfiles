@@ -26,15 +26,15 @@ return {
                     vim.keymap.set(mode, keys, func, { buffer = event.buf, desc = "LSP: " .. desc })
                 end
 
-                map("grn", vim.lsp.buf.rename, "[R]e[n]ame")
-                map("gra", vim.lsp.buf.code_action, "[G]oto Code [A]ction", { "n", "x" })
+                -- Neovim 0.11+ has built-in LSP mappings: grn, gra, grr, gri, gO
+                -- Only override where we want Telescope picker instead
                 map("grr", require("telescope.builtin").lsp_references, "[G]oto [R]eferences")
                 map("gri", require("telescope.builtin").lsp_implementations, "[G]oto [I]mplementation")
-                map("grd", require("telescope.builtin").lsp_definitions, "[G]oto [D]efinition")
+                map("grd", vim.lsp.buf.definition, "[G]oto [D]efinition")
                 map("grD", vim.lsp.buf.declaration, "[G]oto [D]eclaration")
                 map("gO", require("telescope.builtin").lsp_document_symbols, "Open Document Symbols")
                 map("gW", require("telescope.builtin").lsp_dynamic_workspace_symbols, "Open Workspace Symbols")
-                map("grt", require("telescope.builtin").lsp_type_definitions, "[G]oto [T]ype Definition")
+                map("grt", vim.lsp.buf.type_definition, "[G]oto [T]ype Definition")
 
                 ---@param client vim.lsp.Client
                 ---@param method vim.lsp.protocol.Method
