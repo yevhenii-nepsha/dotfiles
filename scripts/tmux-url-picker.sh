@@ -2,129 +2,100 @@
 # ============================================================================
 # Tmux URL Picker with Context
 # ============================================================================
-# Extracts URLs from current pane with surrounding context and opens selected
+# Fast URL extraction with context display
+# Shows: context │ url
 
-# Check if fzf is installed
-if ! command -v fzf &> /dev/null; then
-    tmux display-message "❌ Error: fzf not installed"
+HISTORY_LIMIT="${1:-2000}"
+
+# Check dependencies
+if ! command -v fzf &>/dev/null; then
+    tmux display-message "Error: fzf not installed"
     exit 1
 fi
 
-# Show loading indicator
-tmux display-message "🔍 Scanning for URLs..."
+# Capture pane content
+if [[ "$HISTORY_LIMIT" == "screen" ]]; then
+    content="$(tmux capture-pane -J -p)"
+else
+    content="$(tmux capture-pane -J -p -S -"$HISTORY_LIMIT")"
+fi
 
-# Capture pane content (last 1000 lines only for performance)
-# -S -1000 means start from 1000 lines back in history
-# This is much faster than -S - (entire history) for long sessions
-PANE_CONTENT=$(tmux capture-pane -p -J -S -1000)
+# Temporary file for results
+tmp_file=$(mktemp)
+trap "rm -f $tmp_file" EXIT
 
-# Temporary file for URL list with context
-TMP_FILE=$(mktemp)
-trap "rm -f $TMP_FILE" EXIT
+# 1. Extract markdown links: [text](url)
+grep -oE '\[[^]]+\]\(<?https?://[^)>]+>?\)' <<< "$content" 2>/dev/null | while IFS= read -r match; do
+    text="${match%%\]*}"
+    text="${text#\[}"
+    url="${match##*\(}"
+    url="${url%\)}"
+    url="${url#<}"
+    url="${url%>}"
+    [[ ${#text} -gt 50 ]] && text="${text:0:47}..."
+    printf '%s │ %s\n' "$text" "$url"
+done >> "$tmp_file"
 
-# Extract markdown links: [text](url) or [text](<url>)
-# Process each line separately to handle multiple links per line
-echo "$PANE_CONTENT" | while IFS= read -r line; do
-    # Find all markdown links in the line
-    # Use grep to extract each link, then process with sed
-    echo "$line" | grep -oE '\[[^]]+\]\(<?https?://[^)>]+>?\)' | while read -r match; do
-        # Extract text between [ and ]
-        text=$(echo "$match" | sed -E 's/^\[([^]]+)\].*/\1/')
+# 2. Extract plain URLs with domain as context
+grep -oE 'https?://[A-Za-z0-9._~:/?#@!$&()*+,;=%-]+' <<< "$content" 2>/dev/null | while IFS= read -r url; do
+    # Clean trailing punctuation that may be captured from markdown
+    url="${url%)}"
+    url="${url%>}"
+    domain="${url#*://}"
+    domain="${domain%%/*}"
+    printf '%s │ %s\n' "$domain" "$url"
+done >> "$tmp_file"
 
-        # Extract URL (remove angle brackets if present)
-        url=$(echo "$match" | sed -E 's/.*\(<?([^)>]+)>?\)/\1/')
+# 3. Git SSH URLs
+grep -oE 'git@[^:]+:[^ ]+' <<< "$content" 2>/dev/null | while IFS= read -r git_url; do
+    # Convert git@github.com:user/repo to https://github.com/user/repo
+    host="${git_url#git@}"
+    host="${host%%:*}"
+    path="${git_url#*:}"
+    url="https://${host}/${path}"
+    printf 'git │ %s\n' "$url"
+done >> "$tmp_file"
 
-        # Remove any remaining < or > from URL
-        url=$(echo "$url" | tr -d '<>')
+# Remove duplicates by URL (second column), keep first occurrence
+awk -F ' │ ' '!seen[$2]++' "$tmp_file" > "${tmp_file}.dedup"
+mv "${tmp_file}.dedup" "$tmp_file"
 
-        # Truncate text if too long (keep it compact)
-        if [ ${#text} -gt 40 ]; then
-            text="${text:0:37}..."
-        fi
-
-        echo "${text} │ ${url}"
-    done
-done >> "$TMP_FILE"
-
-# Extract plain URLs with context (only from lines without markdown links)
-echo "$PANE_CONTENT" | grep -v '\[.*\](.*https\?://' | while IFS= read -r line; do
-    # Skip empty lines
-    [ -z "$line" ] && continue
-
-    # Find all URLs in the line
-    echo "$line" | grep -oE 'https?://[a-zA-Z0-9./?=_%:~#+&@!-]+' | while read -r url; do
-        # Get context before URL (last 30 chars before URL)
-        before=$(echo "$line" | sed "s|$url.*||" | tail -c 31 | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
-
-        # Get context after URL (first 15 chars after URL)
-        after=$(echo "$line" | sed "s|.*$url||" | head -c 16 | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
-
-        # Build context - use only before OR domain
-        if [ -n "$before" ]; then
-            context="$before"
-        elif [ -n "$after" ]; then
-            context="$after"
-        else
-            # No context - use domain name
-            context=$(echo "$url" | sed -E 's|https?://([^/]+).*|\1|')
-        fi
-
-        # Truncate context if too long (compact)
-        if [ ${#context} -gt 35 ]; then
-            context="${context:0:32}..."
-        fi
-
-        echo "${context} │ ${url}"
-    done
-done >> "$TMP_FILE"
-
-# Check if any URLs found BEFORE sorting
-if [ ! -s "$TMP_FILE" ]; then
-    tmux display-message "ℹ️  No URLs found in last 1000 lines"
+# Check if any URLs found
+if [[ ! -s "$tmp_file" ]]; then
+    tmux display-message "No URLs found"
     exit 0
 fi
 
-# Remove duplicates (same URL) - sort by URL (everything after │)
-sort -u -t'│' -k2 "$TMP_FILE" 2>/dev/null > "${TMP_FILE}.sorted" || \
-    sort -u "$TMP_FILE" > "${TMP_FILE}.sorted"
-mv "${TMP_FILE}.sorted" "$TMP_FILE"
+url_count=$(wc -l < "$tmp_file" | tr -d ' ')
 
-# Double-check after deduplication
-if [ ! -s "$TMP_FILE" ]; then
-    tmux display-message "ℹ️  No URLs found in last 1000 lines"
-    exit 0
-fi
+# Select with fzf (--nth 1 searches only in context column)
+selected=$(fzf --tmux center,80%,50% \
+    --header "Select URL ($url_count found):" \
+    --multi \
+    --no-preview \
+    --bind 'ctrl-a:select-all' \
+    --delimiter ' │ ' \
+    --nth 1 < "$tmp_file") || true
 
-# Count URLs
-URL_COUNT=$(wc -l < "$TMP_FILE" | tr -d ' ')
-
-# Clear loading message
-tmux display-message ""
-
-# Select URL with fzf (showing context | url)
-# Full line format: "context │ url" - display both to see full URL
-SELECTED=$(cat "$TMP_FILE" | fzf --reverse \
-    --header "Select URL to open ($URL_COUNT found):" \
-    --bind 'j:down,k:up,enter:accept' \
-    --no-sort \
-    --color='bg+:238,fg+:81,hl:81,hl+:81,header:250,pointer:81,marker:81,prompt:81,info:244')
-
-# Extract URL from selection (everything after │)
-if [ -n "$SELECTED" ]; then
-    URL=$(echo "$SELECTED" | sed 's/.*│ //')
-
-    # Use 'open' on macOS, 'xdg-open' on Linux
-    if command -v open &> /dev/null; then
-        open "$URL" &> /dev/null
-    elif command -v xdg-open &> /dev/null; then
-        xdg-open "$URL" &> /dev/null
+# Open selected URLs
+if [[ -n "$selected" ]]; then
+    while IFS= read -r line; do
+        url="${line##* │ }"
+        if command -v open &>/dev/null; then
+            open "$url" &>/dev/null &
+        elif command -v xdg-open &>/dev/null; then
+            xdg-open "$url" &>/dev/null &
+        fi
+    done <<< "$selected"
+    
+    # Show notification
+    count=$(wc -l <<< "$selected" | tr -d ' ')
+    if [[ "$count" -eq 1 ]]; then
+        url="${selected##* │ }"
+        display="${url:0:50}"
+        [[ ${#url} -gt 50 ]] && display="${display}..."
+        tmux display-message "Opening: $display"
     else
-        tmux display-message "❌ Error: No browser opener found (open/xdg-open)"
-        exit 1
+        tmux display-message "Opening $count URLs"
     fi
-
-    # Show notification with truncated URL
-    URL_DISPLAY="${URL:0:50}"
-    [ ${#URL} -gt 50 ] && URL_DISPLAY="${URL_DISPLAY}..."
-    tmux display-message "🌐 Opening: $URL_DISPLAY"
 fi
