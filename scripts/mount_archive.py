@@ -30,6 +30,19 @@ def is_mounted(mount_point):
     return os.path.ismount(mount_point)
 
 
+def is_host_reachable(host="macmini", timeout=2):
+    """Check if host is reachable via ping."""
+    try:
+        result = subprocess.run(
+            ["ping", "-c", "1", "-W", str(timeout * 1000), host],
+            capture_output=True,
+            timeout=timeout + 1,
+        )
+        return result.returncode == 0
+    except (subprocess.TimeoutExpired, Exception):
+        return False
+
+
 def mount_volume(volume, mount_point):
     if is_mounted(mount_point):
         log(f"Volume already mounted at {mount_point}", "DEBUG")
@@ -54,6 +67,10 @@ def mount_volume(volume, mount_point):
 
 
 def mount_all():
+    if not is_host_reachable("macmini"):
+        log("Host macmini not reachable, skipping mount", "DEBUG")
+        return
+
     for vol_config in VOLUMES:
         mount_volume(vol_config["volume"], vol_config["mount_point"])
 
