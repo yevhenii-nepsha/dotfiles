@@ -1,3 +1,7 @@
+-- Disable netrw (use mini.files instead with '-' key)
+vim.g.loaded_netrw = 1
+vim.g.loaded_netrwPlugin = 1
+
 vim.wo.number = true -- Make line numbers default (default: false)
 vim.o.relativenumber = true -- Set relative numbered lines (default: false)
 -- Note: clipboard configuration moved to core/clipboard.lua for OSC 52 support

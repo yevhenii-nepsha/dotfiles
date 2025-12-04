@@ -1,3 +1,18 @@
+local vault_path = vim.fn.fnamemodify("~/Documents/obsidian/nostromo", ":p"):gsub("/$", "")
+local home_path = vault_path .. "/system/home.md"
+
+-- Function to open home if in vault with no file
+local function open_home_if_in_vault()
+    local cwd = vim.fn.getcwd()
+    local no_file = vim.fn.argc() == 0
+        or (vim.fn.argc() == 1 and vim.fn.argv(0) == ".")
+    if no_file and cwd:find(vault_path, 1, true) then
+        vim.schedule(function()
+            vim.cmd("edit " .. home_path)
+        end)
+    end
+end
+
 -- Create new note in inbox with proper frontmatter (no # heading)
 local function new_inbox_note()
     local title = vim.fn.input("Enter note title: ")
@@ -101,6 +116,7 @@ return {
     dependencies = {
         "nvim-lua/plenary.nvim",
     },
+    init = open_home_if_in_vault,
     keys = {
         { "<leader>of", "<cmd>ObsidianSearch<cr>", desc = "Find note" },
         { "<leader>on", new_inbox_note, desc = "New note" },
@@ -113,6 +129,7 @@ return {
         { "<leader>oe", ":ObsidianExtractNote<cr>", mode = "v", desc = "Extract to new note" },
         { "<leader>oi", "<cmd>ObsidianTemplate<cr>", desc = "Insert template" },
         { "<leader>om", move_to_notes, desc = "Move to notes/" },
+        { "<leader>oh", "<cmd>edit ~/Documents/obsidian/nostromo/system/home.md<cr>", desc = "Open home" },
     },
     opts = {
         workspaces = {
@@ -128,8 +145,10 @@ return {
         templates = {
             folder = "system/templates",
         },
-        -- Preserve existing frontmatter fields (like 'created')
-        disable_frontmatter = false,
+        -- Disable frontmatter for diary notes, preserve for others
+        disable_frontmatter = function(filename)
+            return filename:match("diary/") ~= nil
+        end,
         note_frontmatter_func = function(note)
             local out = {
                 title = note.title and note.title:lower() or nil,

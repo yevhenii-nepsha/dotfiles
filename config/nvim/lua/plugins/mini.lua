@@ -31,7 +31,7 @@ return {
       -- General options
       options = {
         permanent_delete = true, -- Delete files permanently or to trash
-        use_as_default_explorer = true, -- Replace netrw
+        use_as_default_explorer = false, -- Don't open on startup
       },
 
       -- Window display
@@ -48,6 +48,21 @@ return {
     vim.keymap.set('n', '-', function()
       require('mini.files').open(vim.api.nvim_buf_get_name(0))
     end, { desc = 'Open parent directory in mini.files' })
+
+    -- Quick access to Obsidian vault directories
+    local vault = vim.fn.expand("~/Documents/obsidian/nostromo")
+    vim.keymap.set('n', '<leader>eI', function()
+      require('mini.files').open(vault .. "/inbox")
+    end, { desc = 'Open inbox in mini.files' })
+    vim.keymap.set('n', '<leader>eN', function()
+      require('mini.files').open(vault .. "/notes")
+    end, { desc = 'Open notes in mini.files' })
+    vim.keymap.set('n', '<leader>eD', function()
+      require('mini.files').open(vault .. "/diary")
+    end, { desc = 'Open diary in mini.files' })
+    vim.keymap.set('n', '<leader>eP', function()
+      require('mini.files').open(vault .. "/projects")
+    end, { desc = 'Open projects in mini.files' })
 
     -- ============================================================================
     -- MINI.AI - Extended and created text objects
