@@ -30,5 +30,8 @@ require("lazy").setup({
     require("plugins.colortheme"),
     require("plugins.rustaceanvim"),
     require("plugins.mini"),
-    require("plugins.markdown-render"),
+    require("plugins.obsidian"),
+    require("plugins.bullets"),
+    require("plugins.table-mode"),
+    require("plugins.render-markdown"),
 })

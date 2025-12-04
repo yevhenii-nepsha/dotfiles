@@ -27,7 +27,7 @@ vim.o.smartindent = true -- Make indenting smarter again (default: false)
 vim.o.showtabline = 2 -- Always show tabs (default: 1)
 vim.o.backspace = "indent,eol,start" -- Allow backspace on (default: 'indent,eol,start')
 vim.o.pumheight = 10 -- Pop up menu height (default: 0)
-vim.o.conceallevel = 0 -- Disable concealing (show all characters including quotes) (default: 1)
+vim.o.conceallevel = 1 -- Enable basic concealing for markdown rendering
 vim.wo.signcolumn = "yes" -- Keep signcolumn on by default (default: auto)
 vim.o.encoding = "utf-8" -- Internal character encoding
 vim.o.fileencoding = "utf-8" -- The encoding written to a file (default: 'utf-8')
@@ -39,6 +39,37 @@ vim.o.timeoutlen = 300 -- Time to wait for a mapped sequence to complete (in mil
 vim.o.backup = false -- Creates a backup file (default: false)
 vim.o.writebackup = false -- If a file is being edited by another program (or was written to file while editing with another program), it is not allowed to be edited (default: true)
 vim.o.undofile = true -- Save undo history (default: false)
+vim.o.autoread = true -- Auto reload file if changed outside vim (default: false)
+
+-- Ignore external file changes when buffer has unsaved modifications
+-- Prevents Obsidian sync conflicts from overwriting your work
+vim.api.nvim_create_autocmd("FileChangedShell", {
+    pattern = "*",
+    callback = function()
+        -- Keep our version if buffer is modified, otherwise reload
+        if vim.bo.modified then
+            vim.v.fcs_choice = ""  -- ignore the change
+        else
+            vim.v.fcs_choice = "reload"
+        end
+    end,
+})
+
+vim.api.nvim_create_autocmd({ "FocusGained", "BufEnter" }, {
+    pattern = "*",
+    command = "silent! checktime",
+})
+
+-- Enable word wrap for markdown files at colorcolumn width
+vim.api.nvim_create_autocmd("FileType", {
+    pattern = "markdown",
+    callback = function()
+        vim.opt_local.wrap = true
+        vim.opt_local.linebreak = true
+        vim.opt_local.textwidth = 88
+        vim.opt_local.colorcolumn = ""  -- hide line since we wrap at this width
+    end,
+})
 vim.o.completeopt = "menuone,noselect" -- Set completeopt to have a better completion experience (default: 'menu,preview')
 vim.o.list = true -- Show invisible characters (default: false)
 vim.opt.listchars = { space = '·', tab = '→ ', trail = '•', nbsp = '␣' } -- Characters to show for whitespace
