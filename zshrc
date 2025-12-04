@@ -103,6 +103,11 @@ v() {
   fi
 }
 
+# Open Obsidian vault in nvim
+notes() {
+  cd ~/Documents/obsidian/nostromo && nvim .
+}
+
 # Python virtual environment activation
 pva() {
   local venv_paths=("venv" ".venv" "env" ".env")
