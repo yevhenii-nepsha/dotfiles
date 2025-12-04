@@ -67,8 +67,8 @@ def mount_volume(volume, mount_point):
 
 
 def mount_all():
-    if not is_host_reachable("macmini"):
-        log("Host macmini not reachable, skipping mount", "DEBUG")
+    if not is_host_reachable("macmini.local"):
+        log("Host macmini.local not reachable, skipping mount", "DEBUG")
         return
 
     for vol_config in VOLUMES:
