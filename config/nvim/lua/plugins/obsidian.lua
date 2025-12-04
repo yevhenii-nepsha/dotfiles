@@ -185,6 +185,10 @@ return {
             },
             bullets = { char = "•", hl_group = "ObsidianBullet" },
         },
+        -- Open external URLs in default browser
+        follow_url_func = function(url)
+            vim.fn.jobstart({ "open", url })
+        end,
         -- Custom mappings (disable <cr> smart action, keep gf for links)
         mappings = {
             ["gf"] = {
