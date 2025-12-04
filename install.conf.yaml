@@ -80,6 +80,11 @@
     ~/.config/yazi: config/yazi
     ~/.config/bat: config/bat
 
+    # === OpenCode ===
+    ~/.config/opencode/opencode.json:
+      path: config/opencode/opencode.json
+      create: true
+
     # === Specific Files (not full directories) ===
     ~/.config/tmux/tmux.conf:
       path: config/tmux/tmux.conf
