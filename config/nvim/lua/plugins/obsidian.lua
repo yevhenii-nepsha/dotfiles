@@ -46,37 +46,33 @@ local function move_to_notes()
         return
     end
 
-    local client = require("obsidian").get_client()
-    local vault_path = tostring(client.dir)
-    local notes_dir = vault_path .. "/notes"
-
-    -- Get filename
-    local filename = vim.fn.expand("%:t")
-    local new_path = notes_dir .. "/" .. filename
-
     -- Check if already in notes/
     if current_file:match("/notes/") then
         vim.notify("Already in notes/", vim.log.levels.INFO)
         return
     end
 
-    -- Change tag from 📥 to 📝 in current buffer
-    local lines = vim.api.nvim_buf_get_lines(0, 0, -1, false)
-    local in_frontmatter = false
-    for i, line in ipairs(lines) do
-        if i == 1 and line == "---" then
-            in_frontmatter = true
-        elseif in_frontmatter and line == "---" then
-            break -- End of frontmatter, stop searching
-        elseif in_frontmatter and line:find("tags:", 1, true) then
-            -- Use plain string find/replace to avoid Unicode issues
-            local new_line = line:gsub("\u{1F4E5}", "\u{1F4DD}") -- 📥 → 📝
-            if new_line ~= line then
-                lines[i] = new_line
-                vim.api.nvim_buf_set_lines(0, 0, -1, false, lines)
-                break
+    local client = require("obsidian").get_client()
+    local vault_path = tostring(client.dir)
+    local notes_dir = vault_path .. "/notes"
+    local filename = vim.fn.expand("%:t")
+    local new_path = notes_dir .. "/" .. filename
+
+    -- Get current note using obsidian.nvim API
+    local note = client:current_note()
+    if note then
+        -- Remove 📥 tag and add 📝 tag
+        local new_tags = {}
+        for _, tag in ipairs(note.tags or {}) do
+            if tag ~= "📥" then
+                table.insert(new_tags, tag)
             end
         end
+        table.insert(new_tags, "📝")
+        note.tags = new_tags
+
+        -- Save updated frontmatter to buffer
+        note:save_to_buffer()
     end
 
     -- Create notes dir if not exists
