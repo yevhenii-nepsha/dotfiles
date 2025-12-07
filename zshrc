@@ -277,11 +277,62 @@ makesticker() {
 
 # Download YouTube channel as MP3
 ytmp3() {
-  local url="$1"
+  local auth_method="file"
+  local browser="firefox"
+  local cookies_file="cookies.txt"
+  local sleep_min=5
+  local sleep_max=30
+  local sleep_req=2
 
+  # Parse options
+  while [[ "$1" == -* ]]; do
+    case "$1" in
+      -b|--browser)
+        auth_method="browser"
+        [[ -n "$2" && "$2" != -* ]] && browser="$2" && shift
+        shift ;;
+      -o|--oauth)
+        auth_method="oauth"
+        shift ;;
+      -f|--file)
+        auth_method="file"
+        [[ -n "$2" && "$2" != -* ]] && cookies_file="$2" && shift
+        shift ;;
+      -s|--sleep)
+        sleep_min="$2"; shift 2 ;;
+      -S|--sleep-max)
+        sleep_max="$2"; shift 2 ;;
+      -r|--sleep-requests)
+        sleep_req="$2"; shift 2 ;;
+      -h|--help)
+        cat <<EOF
+Usage: ytmp3 [OPTIONS] <channel_url>
+
+Auth options:
+  -b, --browser [name]  Use cookies from browser (default: firefox)
+                        Browsers: firefox, chrome, brave, edge, safari
+  -o, --oauth           Use OAuth authentication
+  -f, --file [path]     Use cookies file (default: cookies.txt)
+
+Rate limit options:
+  -s, --sleep N         Min sleep between videos in seconds (default: 5)
+  -S, --sleep-max N     Max sleep between videos in seconds (default: 30)
+  -r, --sleep-requests N  Sleep between API requests in seconds (default: 2)
+
+Examples:
+  ytmp3 https://www.youtube.com/@channel/videos
+  ytmp3 -b chrome https://www.youtube.com/@channel/videos
+  ytmp3 -o https://www.youtube.com/@channel/videos
+  ytmp3 -s 10 -S 60 https://www.youtube.com/@channel/videos
+EOF
+        return 0 ;;
+      *) echo "Unknown option: $1 (use -h for help)"; return 1 ;;
+    esac
+  done
+
+  local url="$1"
   if [[ -z "$url" ]]; then
-    echo "Usage: ytmp3 <channel_url>"
-    echo "Example: ytmp3 https://www.youtube.com/@channelname/videos"
+    echo "Usage: ytmp3 [OPTIONS] <channel_url> (use -h for help)"
     return 1
   fi
 
@@ -294,14 +345,24 @@ ytmp3() {
     read -r dirname
   fi
 
+  # Build auth argument
+  local auth_args=()
+  case "$auth_method" in
+    browser) auth_args=(--cookies-from-browser "$browser") ;;
+    oauth)   auth_args=(--username oauth --password '') ;;
+    file)    auth_args=(--cookies "$cookies_file") ;;
+  esac
+
   echo "📁 Downloading to: $dirname/"
+  echo "🔑 Auth: $auth_method"
+  echo "⏱️  Sleep: ${sleep_min}-${sleep_max}s (requests: ${sleep_req}s)"
   mkdir -p "$dirname"
 
   yt-dlp -x --audio-format mp3 --audio-quality 192K \
     --embed-thumbnail --add-metadata \
-    --sleep-interval 5 --max-sleep-interval 30 \
-    --sleep-requests 2 \
-    --cookies cookies.txt \
+    --sleep-interval "$sleep_min" --max-sleep-interval "$sleep_max" \
+    --sleep-requests "$sleep_req" \
+    "${auth_args[@]}" \
     --download-archive "${dirname}/archive.txt" \
     --downloader aria2c --downloader-args aria2c:"-x 16 -s 16" \
     -o "${dirname}/%(title)s.%(ext)s" \
