@@ -100,3 +100,52 @@ vim.keymap.set("n", "[d", vim.diagnostic.goto_prev, { desc = "Go to previous dia
 vim.keymap.set("n", "]d", vim.diagnostic.goto_next, { desc = "Go to next diagnostic message" })
 vim.keymap.set("n", "<leader>d", vim.diagnostic.open_float, { desc = "Open floating diagnostic message" })
 vim.keymap.set("n", "<leader>q", vim.diagnostic.setloclist, { desc = "Open diagnostics list" })
+
+-- Markdown list toggle (visual mode only)
+vim.api.nvim_create_autocmd("FileType", {
+    pattern = "markdown",
+    callback = function()
+        -- Toggle unordered list (- item)
+        vim.keymap.set("v", "<leader>lu", ":lua ToggleUnorderedList()<CR>", { buffer = true, desc = "Toggle unordered list" })
+
+        -- Toggle ordered list (1. 2. 3. ...)
+        vim.keymap.set("v", "<leader>lo", ":lua ToggleOrderedList()<CR>", { buffer = true, desc = "Toggle ordered list" })
+    end,
+})
+
+function ToggleUnorderedList()
+    local start_line = vim.fn.line("'<")
+    local end_line = vim.fn.line("'>")
+    local first_line = vim.fn.getline(start_line)
+    local has_marker = first_line:match("^%s*%- ")
+
+    for i = start_line, end_line do
+        local line = vim.fn.getline(i)
+        if has_marker then
+            line = line:gsub("^(%s*)%- ", "%1")
+        else
+            line = line:gsub("^(%s*)", "%1- ")
+        end
+        vim.fn.setline(i, line)
+    end
+end
+
+function ToggleOrderedList()
+    local start_line = vim.fn.line("'<")
+    local end_line = vim.fn.line("'>")
+    local first_line = vim.fn.getline(start_line)
+    local has_numbers = first_line:match("^%s*%d+%. ")
+
+    for i = start_line, end_line do
+        local line = vim.fn.getline(i)
+        if has_numbers then
+            line = line:gsub("^(%s*)%d+%. ", "%1")
+        else
+            local num = i - start_line + 1
+            line = line:gsub("^(%s*)", "%1" .. num .. ". ")
+        end
+        vim.fn.setline(i, line)
+    end
+end
+
+

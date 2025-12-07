@@ -31,7 +31,7 @@ return {
             formatting.prettier.with({
                 filetypes = { "markdown", "json", "yaml", "toml" },
                 extra_args = {
-                    "--prose-wrap", "never", -- Don't wrap markdown text, keep original line breaks
+                    "--prose-wrap", "preserve", -- Preserve original line breaks in markdown
                 },
             }),
         }

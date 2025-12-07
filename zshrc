@@ -274,3 +274,36 @@ makesticker() {
 
   [[ $? -eq 0 ]] && echo "✅ Created: $output" || echo "❌ Failed to create sticker"
 }
+
+# Download YouTube channel as MP3
+ytmp3() {
+  local url="$1"
+
+  if [[ -z "$url" ]]; then
+    echo "Usage: ytmp3 <channel_url>"
+    echo "Example: ytmp3 https://www.youtube.com/@channelname/videos"
+    return 1
+  fi
+
+  # Extract channel name from URL
+  local dirname
+  dirname=$(echo "$url" | sed -E 's|.*/@@?([^/]+).*|\1|')
+
+  if [[ -z "$dirname" || "$dirname" == "$url" ]]; then
+    echo "Could not extract channel name. Enter directory name:"
+    read -r dirname
+  fi
+
+  echo "📁 Downloading to: $dirname/"
+  mkdir -p "$dirname"
+
+  yt-dlp -x --audio-format mp3 --audio-quality 192K \
+    --embed-thumbnail --add-metadata \
+    --sleep-interval 5 --max-sleep-interval 30 \
+    --sleep-requests 2 \
+    --cookies cookies.txt \
+    --download-archive "${dirname}/archive.txt" \
+    --downloader aria2c --downloader-args aria2c:"-x 16 -s 16" \
+    -o "${dirname}/%(title)s.%(ext)s" \
+    "$url"
+}

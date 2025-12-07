@@ -1,5 +1,5 @@
 local vault_path = vim.fn.fnamemodify("~/Documents/obsidian/nostromo", ":p"):gsub("/$", "")
-local home_path = vault_path .. "/system/home.md"
+local home_path = vault_path .. "/home.md"
 
 -- Function to open home if in vault with no file
 local function open_home_if_in_vault()
@@ -50,6 +50,89 @@ aliases:
         vim.cmd("normal! G")
     else
         vim.notify("Failed to create note", vim.log.levels.ERROR)
+    end
+end
+
+-- Create new literature note (source)
+local function new_literature_note()
+    local title = vim.fn.input("Enter source title: ")
+    if title == "" then
+        vim.notify("Aborted", vim.log.levels.WARN)
+        return
+    end
+
+    local client = require("obsidian").get_client()
+    local vault_path = tostring(client.dir)
+    local lit_dir = vault_path .. "/literature notes"
+    local file_path = lit_dir .. "/" .. title .. ".md"
+
+    local content = string.format([[---
+title: %s
+tags: [source/book]
+author: 
+status: to-do
+url: 
+---
+
+## Notes
+
+]], title:lower())
+
+    vim.fn.mkdir(lit_dir, "p")
+    local f = io.open(file_path, "w")
+    if f then
+        f:write(content)
+        f:close()
+        vim.cmd("edit " .. vim.fn.fnameescape(file_path))
+        -- Wait for Obsidian to process the file, then reload silently
+        vim.defer_fn(function()
+            vim.cmd("silent! checktime")
+            vim.cmd("normal! G")
+        end, 500)
+    else
+        vim.notify("Failed to create literature note", vim.log.levels.ERROR)
+    end
+end
+
+-- Create new research note
+local function new_research_note()
+    local title = vim.fn.input("Enter research title: ")
+    if title == "" then
+        vim.notify("Aborted", vim.log.levels.WARN)
+        return
+    end
+
+    local client = require("obsidian").get_client()
+    local vault_path = tostring(client.dir)
+    local research_dir = vault_path .. "/research"
+    local file_path = research_dir .. "/" .. title .. ".md"
+
+    local content = string.format([[---
+title: %s
+tags: [research]
+created: %s
+status: to-do
+---
+
+## Sources
+
+## Notes
+
+]], title:lower(), os.date("%Y-%m-%d %H:%M"))
+
+    vim.fn.mkdir(research_dir, "p")
+    local f = io.open(file_path, "w")
+    if f then
+        f:write(content)
+        f:close()
+        vim.cmd("edit " .. vim.fn.fnameescape(file_path))
+        -- Wait for Obsidian to process the file, then reload silently
+        vim.defer_fn(function()
+            vim.cmd("silent! checktime")
+            vim.cmd("normal! G")
+        end, 500)
+    else
+        vim.notify("Failed to create research note", vim.log.levels.ERROR)
     end
 end
 
@@ -129,7 +212,9 @@ return {
         { "<leader>oe", ":ObsidianExtractNote<cr>", mode = "v", desc = "Extract to new note" },
         { "<leader>oi", "<cmd>ObsidianTemplate<cr>", desc = "Insert template" },
         { "<leader>om", move_to_notes, desc = "Move to notes/" },
-        { "<leader>oh", "<cmd>edit ~/Documents/obsidian/nostromo/system/home.md<cr>", desc = "Open home" },
+        { "<leader>oh", "<cmd>edit ~/Documents/obsidian/nostromo/home.md<cr>", desc = "Open home" },
+        { "<leader>os", new_literature_note, desc = "New source (literature note)" },
+        { "<leader>or", new_research_note, desc = "New research note" },
     },
     opts = {
         workspaces = {

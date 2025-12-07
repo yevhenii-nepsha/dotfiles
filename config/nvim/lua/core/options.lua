@@ -72,6 +72,9 @@ vim.api.nvim_create_autocmd("FileType", {
         vim.opt_local.linebreak = true
         vim.opt_local.textwidth = 88
         vim.opt_local.colorcolumn = ""  -- hide line since we wrap at this width
+        vim.opt_local.shiftwidth = 4
+        vim.opt_local.tabstop = 4
+        vim.opt_local.softtabstop = 4
     end,
 })
 vim.o.completeopt = "menuone,noselect" -- Set completeopt to have a better completion experience (default: 'menu,preview')

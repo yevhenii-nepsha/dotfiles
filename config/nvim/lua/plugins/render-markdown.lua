@@ -3,19 +3,19 @@ return {
     dependencies = { "nvim-treesitter/nvim-treesitter", "nvim-mini/mini.nvim" },
     ft = { "markdown" },
     opts = {
-        -- Only render tables and code blocks, disable everything else
-        heading = { enabled = false },
+        heading = { enabled = true },
         paragraph = { enabled = false },
         code = { enabled = true },
-        dash = { enabled = false },
-        bullet = { enabled = false },
-        checkbox = { enabled = false },
-        quote = { enabled = false },
+        dash = { enabled = true },
+        bullet = { enabled = false },  -- obsidian.nvim handles this
+        checkbox = { enabled = false }, -- obsidian.nvim handles this
+        quote = { enabled = true },
         pipe_table = { enabled = true },
         callout = {},
-        link = { enabled = false },
+        link = { enabled = true },
         sign = { enabled = false },
-        indent = { enabled = false },
+        indent = { enabled = true },
+        inline_highlight = { enabled = true },
         -- Don't change conceallevel, let obsidian.nvim handle it
         win_options = {
             conceallevel = {
