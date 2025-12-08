@@ -53,6 +53,22 @@ services:
       retries: 3
       start_period: 40s
 
+  slskd:
+    image: slskd/slskd:latest
+    container_name: slskd
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:5030:5030"  # Web UI (localhost only)
+      - "50300:50300"          # Soulseek incoming connections
+    environment:
+      - SLSKD_REMOTE_CONFIGURATION=true
+    volumes:
+      - ${SLSKD_CONFIG_PATH}:/app
+      - ${SLSKD_DOWNLOADS_PATH}:/downloads
+      - ${SLSKD_SHARED_PATH}:/shared:ro
+    networks:
+      - media-network
+
   tunnel:
     image: cloudflare/cloudflared:latest
     container_name: cloudflared-tunnel
