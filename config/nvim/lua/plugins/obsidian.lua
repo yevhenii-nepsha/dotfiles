@@ -280,6 +280,9 @@ return {
                 insert_tag = "<C-l>",
             },
         },
+        search = {
+            exclude = { "system", "diary" },
+        },
         ui = {
             enable = true,
             update_debounce = 100, -- faster UI updates (default 200)

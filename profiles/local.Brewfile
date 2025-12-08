@@ -60,6 +60,7 @@ cask "aldente"                       # Battery charge limiter for MacBook
 cask "itsycal"                       # Menu bar calendar
 cask "google-drive"                  # Google Drive sync client
 cask "xquartz"                       # X11 for macOS (required by some apps)
+cask "openinterminal"                # Open files/folders in terminal from Finder
 
 # ============================================================================
 # FONTS
