@@ -15,5 +15,9 @@ return {
                 },
             },
         })
+
+        -- Markdown bold/italic keymaps (visual mode)
+        vim.keymap.set("v", "<leader>mb", 'c**<C-r>"**<Esc>', { desc = "Markdown bold" })
+        vim.keymap.set("v", "<leader>mi", 'c*<C-r>"*<Esc>', { desc = "Markdown italic" })
     end,
 }

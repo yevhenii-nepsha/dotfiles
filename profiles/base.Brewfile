@@ -53,6 +53,7 @@ brew "starship"                      # Cross-shell prompt
 # ============================================================================
 brew "yazi"                          # Terminal file manager
 brew "tree"                          # Directory tree viewer
+brew "zoxide"                        # Smarter cd command (z, zi)
 
 # ============================================================================
 # TEXT & DATA PROCESSING

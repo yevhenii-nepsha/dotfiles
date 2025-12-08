@@ -29,10 +29,7 @@ return {
             require("none-ls.formatting.ruff_format"),
             -- Prettier for markdown, JSON, YAML, TOML
             formatting.prettier.with({
-                filetypes = { "markdown", "json", "yaml", "toml" },
-                extra_args = {
-                    "--prose-wrap", "preserve", -- Preserve original line breaks in markdown
-                },
+                filetypes = { "json", "yaml", "toml" },
             }),
         }
 

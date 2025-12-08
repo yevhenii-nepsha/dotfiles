@@ -55,6 +55,11 @@ if command -v direnv &>/dev/null; then
   eval "$(direnv hook zsh)"
 fi
 
+# Initialize zoxide (smarter cd)
+if command -v zoxide &>/dev/null; then
+  eval "$(zoxide init zsh)"
+fi
+
 # ============================================================================
 # Aliases
 # ============================================================================
