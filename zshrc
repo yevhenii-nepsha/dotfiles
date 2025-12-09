@@ -8,6 +8,12 @@
 # ============================================================================
 
 export DOTFILES_DIR="${HOME}/.dotfiles"
+
+# Ensure Screenshots directory exists and set as default location
+if [[ ! -d ~/Downloads/Screenshots ]]; then
+  mkdir -p ~/Downloads/Screenshots
+  defaults write com.apple.screencapture location ~/Downloads/Screenshots
+fi
 export FUNCTIONS_CORE_TOOLS_TELEMETRY_OPTOUT=1
 export PATH=~/.local/bin:$HOME/.opencode/bin:$PATH
 export EDITOR=nvim

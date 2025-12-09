@@ -70,8 +70,8 @@ vim.api.nvim_create_autocmd("FileType", {
     callback = function()
         vim.opt_local.wrap = true
         vim.opt_local.linebreak = true
-        vim.opt_local.textwidth = 88
-        vim.opt_local.colorcolumn = ""  -- hide line since we wrap at this width
+        vim.opt_local.textwidth = 0
+        vim.opt_local.colorcolumn = ""
         vim.opt_local.shiftwidth = 4
         vim.opt_local.tabstop = 4
         vim.opt_local.softtabstop = 4

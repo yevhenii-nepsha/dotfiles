@@ -136,6 +136,17 @@ status: to-do
     end
 end
 
+-- Search notes by title in frontmatter (live grep)
+local function search_by_title()
+    local vault_path = vim.fn.fnamemodify("~/Documents/obsidian/nostromo", ":p"):gsub("/$", "")
+    require("telescope.builtin").live_grep({
+        cwd = vault_path,
+        prompt_title = "Search by Title",
+        default_text = "^title:.*",
+        additional_args = { "--glob", "*.md" },
+    })
+end
+
 -- Move current note to notes/ directory and update tag
 local function move_to_notes()
     local current_file = vim.fn.expand("%:p")
@@ -202,6 +213,7 @@ return {
     init = open_home_if_in_vault,
     keys = {
         { "<leader>of", "<cmd>ObsidianSearch<cr>", desc = "Find note" },
+        { "<leader>oa", search_by_title, desc = "Find note by title" },
         { "<leader>on", new_inbox_note, desc = "New note" },
         { "<leader>ot", "<cmd>ObsidianToday<cr>", desc = "Today's daily note" },
         { "<leader>oy", "<cmd>ObsidianYesterday<cr>", desc = "Yesterday's daily note" },

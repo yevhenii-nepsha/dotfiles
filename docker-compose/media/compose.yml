@@ -29,7 +29,7 @@ services:
     restart: unless-stopped
     ports:
       # Bind to localhost only for security
-      - "127.0.0.1:8080:8080" # Web UI
+      - "8080:8080" # Web UI
       - "6881:6881" # TCP incoming connections
       - "6881:6881/udp" # UDP incoming connections
     environment:

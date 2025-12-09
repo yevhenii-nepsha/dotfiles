@@ -86,6 +86,38 @@
 - `<` / `>` (visual mode) - Indent/unindent (stays in visual mode)
 - `p` (visual mode) - Paste without yanking deleted text
 - `<leader>lw` - Toggle line wrapping
+- `<leader>mb` (visual mode) - Wrap selection in **bold**
+- `<leader>mi` (visual mode) - Wrap selection in *italic*
+
+### Markdown Lists (visual mode)
+- `<leader>lu` - Toggle unordered list (- item)
+- `<leader>lo` - Toggle ordered list (1. 2. 3.)
+
+### Obsidian
+- `<leader>of` - Find note (search content)
+- `<leader>oa` - Find note by title
+- `<leader>on` - New note in inbox
+- `<leader>ot` - Today's daily note
+- `<leader>oy` - Yesterday's daily note
+- `<leader>ob` - Backlinks
+- `<leader>ol` (visual) - Link selection
+- `<leader>oc` - Toggle checkbox
+- `<leader>oo` - Open in Obsidian app
+- `<leader>oe` (visual) - Extract to new note
+- `<leader>oi` - Insert template
+- `<leader>om` - Move to notes/
+- `<leader>oh` - Open home
+- `<leader>os` - New source (literature note)
+- `<leader>or` - New research note
+
+### Surround (nvim-surround)
+In visual mode, select text then press `S` + character:
+- `S` + `"` - Wrap in double quotes
+- `S` + `'` - Wrap in single quotes
+- `S` + `(` or `)` - Wrap in parentheses
+- `S` + `{` or `}` - Wrap in braces
+- `S` + `[` or `]` - Wrap in brackets
+- `S` + `l` - Wrap as markdown link (prompts for URL)
 
 ---
 
@@ -101,7 +133,8 @@
 - **mason.nvim** - LSP/tool installer
 - **mason-lspconfig.nvim** - Bridge between Mason and lspconfig
 - **mason-tool-installer.nvim** - Auto-install tools
-- **blink.cmp** - Fast completion engine
+- **nvim-cmp** - Completion engine
+- **cmp-nvim-lsp** - LSP source for nvim-cmp
 - **LuaSnip** - Snippet engine
 - **friendly-snippets** - Collection of snippets
 - **lazydev.nvim** - Lua development support
@@ -528,7 +561,7 @@ git restore .
 Current optimizations:
 - ✅ Lazy loading for LSP, Treesitter, Gitsigns
 - ✅ Fast update time (100ms)
-- ✅ Optimized completion (blink.cmp)
+- ✅ Optimized completion (nvim-cmp)
 - ✅ Minimal plugin count (33 active plugins)
 
 ### Check Performance
@@ -561,5 +594,5 @@ Current optimizations:
 
 ---
 
-**Last Updated**: 2025-10-08
-**Config Version**: Optimized v1.0
+**Last Updated**: 2025-12-09
+**Config Version**: Optimized v1.1
