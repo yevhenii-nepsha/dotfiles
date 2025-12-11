@@ -6,7 +6,7 @@ from datetime import datetime
 
 VOLUMES = [
     {"volume": "smb://macmini/archive", "mount_point": "/Volumes/archive"},
-    {"volume": "smb://macmini/photography", "mount_point": "/Volumes/photography"},
+    # {"volume": "smb://macmini/photography", "mount_point": "/Volumes/photography"},
 ]
 LOG_FILE = os.path.expanduser("~/Library/Logs/mount_network_drives.log")
 

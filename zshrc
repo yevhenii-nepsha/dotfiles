@@ -15,7 +15,7 @@ if [[ ! -d ~/Downloads/Screenshots ]]; then
   defaults write com.apple.screencapture location ~/Downloads/Screenshots
 fi
 export FUNCTIONS_CORE_TOOLS_TELEMETRY_OPTOUT=1
-export PATH=~/.local/bin:$HOME/.opencode/bin:$PATH
+export PATH="/Applications/Docker.app/Contents/Resources/bin:~/.local/bin:$HOME/.opencode/bin:$PATH"
 export EDITOR=nvim
 export MANPAGER="sh -c 'sed -u -e \"s/\\x1B\[[0-9;]*m//g; s/.\\x08//g\" | bat -p -lman'"
 export HOMEBREW_CASK_OPTS="--no-quarantine"

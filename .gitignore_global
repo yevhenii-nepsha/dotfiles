@@ -102,9 +102,11 @@ temp/
 config/secrets.yml
 config/master.key
 
-# === Claude Code ===
+# === AI Coding Assistants ===
 .claude/
 claudedocs/
+.opencode/
+.specify/
 
 # === Neovim ===
 lazy-lock.json
