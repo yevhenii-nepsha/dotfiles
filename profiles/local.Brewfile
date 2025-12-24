@@ -29,6 +29,7 @@ cask "excalidrawz"                   # Diagramming tool
 # ============================================================================
 # APPLICATIONS - TERMINAL & SYSTEM
 # ============================================================================
+cask "kitty"                         # GPU-accelerated terminal emulator
 cask "raycast"                       # Spotlight alternative and productivity tool
 
 # ============================================================================

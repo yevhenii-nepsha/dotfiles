@@ -27,6 +27,24 @@ return {
         -- Load snippets from friendly-snippets
         require("luasnip.loaders.from_vscode").lazy_load()
 
+        -- Track autocomplete state
+        vim.g.cmp_autocomplete_enabled = false
+
+        -- Toggle function
+        local function toggle_autocomplete()
+            vim.g.cmp_autocomplete_enabled = not vim.g.cmp_autocomplete_enabled
+            if vim.g.cmp_autocomplete_enabled then
+                cmp.setup({ completion = { autocomplete = { cmp.TriggerEvent.TextChanged } } })
+                vim.notify("Autocomplete: AUTO", vim.log.levels.INFO)
+            else
+                cmp.setup({ completion = { autocomplete = false } })
+                vim.notify("Autocomplete: MANUAL (Tab)", vim.log.levels.INFO)
+            end
+        end
+
+        -- Keymap to toggle: <leader>ta (toggle autocomplete)
+        vim.keymap.set("n", "<leader>ta", toggle_autocomplete, { desc = "Toggle autocomplete" })
+
         cmp.setup({
             snippet = {
                 expand = function(args)

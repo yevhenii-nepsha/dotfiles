@@ -73,12 +73,14 @@
     ~/.config/nvim: config/nvim
 
     # === Terminal Emulators ===
-    ~/.config/ghostty: config/ghostty
     ~/.config/kitty: config/kitty
 
     # === Terminal Tools ===
     ~/.config/yazi: config/yazi
     ~/.config/bat: config/bat
+
+    # === Linters & Formatters ===
+    ~/.config/ruff: config/ruff
 
     # === OpenCode ===
     ~/.config/opencode/opencode.json:

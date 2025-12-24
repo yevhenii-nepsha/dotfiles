@@ -107,6 +107,8 @@ config/master.key
 claudedocs/
 .opencode/
 .specify/
+specs/
+AGENTS.md
 
 # === Neovim ===
 lazy-lock.json
