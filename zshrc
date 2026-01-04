@@ -141,6 +141,57 @@ mkcd() {
   mkdir -p "$1" && cd "$1"
 }
 
+# Prefix filenames with directory name: dirname_filename.ext
+prefix_dirname() {
+  local dirname="${PWD##*/}"
+  local files=()
+  local skipped=0
+
+  # Collect regular files (no hidden, must have extension)
+  for file in *(N.); do
+    if [[ "$file" != "${file%.*}" ]]; then
+      files+=("$file")
+    else
+      ((skipped++))
+    fi
+  done
+
+  if [[ ${#files[@]} -eq 0 ]]; then
+    echo "🚫 No files to rename"
+    [[ $skipped -gt 0 ]] && echo "⏭️  Skipped $skipped files without extension"
+    return 1
+  fi
+
+  # Preview first 3 files
+  echo "📁 Directory: $dirname"
+  echo "📝 Preview (first 3):"
+  for file in "${files[@]:0:3}"; do
+    local base="${file%.*}"
+    local ext="${file##*.}"
+    echo "   $file → ${dirname}_${base}.${ext}"
+  done
+  [[ ${#files[@]} -gt 3 ]] && echo "   ... and $((${#files[@]} - 3)) more"
+  [[ $skipped -gt 0 ]] && echo "⏭️  Skipping $skipped files without extension"
+
+  echo -n "Continue? [y/N] "
+  read -r response
+  if [[ ! "$response" =~ ^[Yy]$ ]]; then
+    echo "❌ Cancelled"
+    return 0
+  fi
+
+  # Rename files
+  local count=0
+  for file in "${files[@]}"; do
+    local base="${file%.*}"
+    local ext="${file##*.}"
+    local newname="${dirname}_${base}.${ext}"
+    mv -- "$file" "$newname" && ((count++))
+  done
+
+  echo "✅ Renamed $count files"
+}
+
 # Unlock directory with confirmation
 unlockdir() {
   local target_dir="${1:-.}"
@@ -190,8 +241,10 @@ ydl() {
 
   noglob yt-dlp $cert_flag \
     -o "$output_format" \
-    -f 'bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]/best' \
+    -f 'bestvideo[ext=mp4][vcodec^=avc]+bestaudio[ext=m4a]/best[ext=mp4]/best' \
     --merge-output-format mp4 \
+    --recode-video mp4 \
+    --postprocessor-args 'ffmpeg:-c:v libx264 -preset fast -crf 18 -c:a aac' \
     --concurrent-fragments 16 \
     --downloader aria2c \
     --downloader-args 'aria2c:--min-split-size=1M --max-connection-per-server=16 --max-concurrent-downloads=16 --split=16' \
