@@ -215,6 +215,58 @@ unlockdir() {
   fi
 }
 
+# Clean music junk files (metadata, playlists, system files)
+cleanmusic() {
+  local extensions=(
+    # Playlists & metadata
+    "*.cue" "*.m3u8" "*.m3u" "*.log" "*.nfo"
+    "*.sfv" "*.ffp" "*.md5" "*.accurip"
+    # Web & torrent
+    "*.url" "*.torrent"
+    # Windows
+    "Thumbs.db" "desktop.ini" "*.db"
+    # macOS
+    ".DS_Store" "._*"
+  )
+  local files=()
+
+  # Collect all matching files
+  for ext in "${extensions[@]}"; do
+    while IFS= read -r -d '' file; do
+      files+=("$file")
+    done < <(find . -name "$ext" -print0 2>/dev/null)
+  done
+
+  if [[ ${#files[@]} -eq 0 ]]; then
+    echo "🚫 No files to delete"
+    return 0
+  fi
+
+  # Show preview
+  echo "📝 Files to delete (${#files[@]} total):"
+  for file in "${files[@]:0:10}"; do
+    echo "   $file"
+  done
+  [[ ${#files[@]} -gt 10 ]] && echo "   ... and $((${#files[@]} - 10)) more"
+
+  echo -n "Delete all? [y/N] "
+  read -r response
+  if [[ ! "$response" =~ ^[Yy]$ ]]; then
+    echo "❌ Cancelled"
+    return 0
+  fi
+
+  # Delete files
+  local count=0
+  for ext in "${extensions[@]}"; do
+    local deleted
+    deleted=$(find . -name "$ext" -delete -print 2>/dev/null | wc -l)
+    count=$((count + deleted))
+  done
+
+  echo "✅ Deleted $count files"
+}
+
 # ============================================================================
 # Download Functions
 # ============================================================================
@@ -325,6 +377,8 @@ EOF
 # Create Telegram sticker from video
 makesticker() {
   local input="$1"
+  local max_duration=3
+  local max_size_kb=256
 
   if [[ -z "$input" || ! -f "$input" ]]; then
     echo "Usage: makesticker <input_file>"
@@ -332,11 +386,66 @@ makesticker() {
   fi
 
   local output="${input%.*}_sticker.webm"
-  ffmpeg -i "$input" -r 30 -c:v libvpx-vp9 -an \
-    -vf "scale=if(gte(iw\,ih)\,512\,-1):if(gte(ih\,iw)\,512\,-1),loop=0:1" \
-    -t 3 -fs 256K "$output"
+  local passlog="${input%.*}_passlog"
 
-  [[ $? -eq 0 ]] && echo "✅ Created: $output" || echo "❌ Failed to create sticker"
+  # Get input duration
+  local input_duration
+  input_duration=$(ffprobe -v error -show_entries format=duration \
+    -of default=noprint_wrappers=1:nokey=1 "$input" 2>/dev/null)
+
+  if [[ -z "$input_duration" ]]; then
+    echo "❌ Failed to get duration from: $input"
+    return 1
+  fi
+
+  # Calculate actual duration (min of input and max allowed)
+  local duration
+  duration=$(echo "$input_duration $max_duration" | awk '{print ($1 < $2) ? $1 : $2}')
+
+  # Calculate target bitrate: (max_size_kb * 8 * 0.95) / duration kbit/s
+  local bitrate
+  bitrate=$(echo "$max_size_kb $duration" | awk '{printf "%.0f", ($1 * 8 * 0.95) / $2}')
+
+  echo "Input duration: ${input_duration}s"
+  echo "Output duration: ${duration}s"
+  echo "Target bitrate: ${bitrate}k"
+  echo ""
+
+  local vf="scale=if(gte(iw\,ih)\,512\,-1):if(gte(ih\,iw)\,512\,-1)"
+
+  # Pass 1: analysis
+  echo "=== Pass 1/2: Analyzing ==="
+  ffmpeg -y -i "$input" -t "$duration" -r 30 -c:v libvpx-vp9 -an \
+    -vf "$vf" -b:v "${bitrate}k" -maxrate "${bitrate}k" -bufsize "${bitrate}k" \
+    -pass 1 -passlogfile "$passlog" -f null /dev/null
+
+  if [[ $? -ne 0 ]]; then
+    echo "❌ Pass 1 failed"
+    rm -f "${passlog}"*.log
+    return 1
+  fi
+
+  # Pass 2: encoding
+  echo ""
+  echo "=== Pass 2/2: Encoding ==="
+  ffmpeg -y -i "$input" -t "$duration" -r 30 -c:v libvpx-vp9 -an \
+    -vf "$vf" -b:v "${bitrate}k" -maxrate "${bitrate}k" -bufsize "${bitrate}k" \
+    -pass 2 -passlogfile "$passlog" "$output"
+
+  local result=$?
+
+  # Cleanup passlog files
+  rm -f "${passlog}"*.log
+
+  if [[ $result -eq 0 ]]; then
+    local size_kb
+    size_kb=$(du -k "$output" | cut -f1)
+    echo ""
+    echo "✅ Created: $output (${size_kb}KB)"
+  else
+    echo "❌ Failed to create sticker"
+    return 1
+  fi
 }
 
 # Download YouTube channel as MP3
