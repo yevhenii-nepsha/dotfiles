@@ -377,7 +377,7 @@ EOF
 # Cut and crop YouTube video for Instagram Stories (9:16)
 storycut() {
   local url="" start_time="" end_time=""
-  local output_name="story"
+  local output_name=""
   local crop_pos="center"
 
   while [[ "$#" -gt 0 ]]; do
@@ -392,7 +392,7 @@ storycut() {
 Usage: storycut -u <URL> -s <START_TIME> -e <END_TIME> [OPTIONS]
 Options:
   -c, --crop      Crop position: left, center, right, 0-100, or blur (default: center)
-  -o, --output    Output filename (default: story)
+  -o, --output    Output filename (default: video title)
   -h, --help      Show this help message
 EOF
         return 0 ;;
@@ -431,6 +431,10 @@ EOF
   local video_url audio_url
   video_url=$(yt-dlp -f 'bestvideo[ext=mp4]/bestvideo' --get-url "$url")
   audio_url=$(yt-dlp -f 'bestaudio[ext=m4a]/bestaudio' --get-url "$url")
+
+  if [[ -z "$output_name" ]]; then
+    output_name=$(yt-dlp --get-title "$url" | sed 's/[\/\\:*?"<>|]/_/g')
+  fi
 
   echo "🎬 Cutting to 9:16 (mode: ${crop_pos})..."
   if [[ "$crop_pos" == "blur" ]]; then
