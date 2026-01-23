@@ -374,6 +374,85 @@ EOF
   echo "✅ Done!"
 }
 
+# Cut and crop YouTube video for Instagram Stories (9:16)
+storycut() {
+  local url="" start_time="" end_time=""
+  local output_name="story"
+  local crop_pos="center"
+
+  while [[ "$#" -gt 0 ]]; do
+    case "$1" in
+      -u|--url) url="$2"; shift ;;
+      -s|--start) start_time="$2"; shift ;;
+      -e|--end) end_time="$2"; shift ;;
+      -o|--output) output_name="$2"; shift ;;
+      -c|--crop) crop_pos="$2"; shift ;;
+      -h|--help)
+        cat <<EOF
+Usage: storycut -u <URL> -s <START_TIME> -e <END_TIME> [OPTIONS]
+Options:
+  -c, --crop      Crop position: left, center, right, 0-100, or blur (default: center)
+  -o, --output    Output filename (default: story)
+  -h, --help      Show this help message
+EOF
+        return 0 ;;
+      *) echo "Unknown parameter: $1 (use -h for help)"; return 1 ;;
+    esac
+    shift
+  done
+
+  if [[ -z "$url" || -z "$start_time" || -z "$end_time" ]]; then
+    echo "🚨 Error: Required arguments missing! Use -h for help"
+    return 1
+  fi
+
+  # Build video filter
+  local vf
+  if [[ "$crop_pos" == "blur" ]]; then
+    vf="split[bg][fg];[bg]scale=1080:1920:force_original_aspect_ratio=increase,crop=1080:1920,boxblur=20:5[bg];[fg]scale=1080:1920:force_original_aspect_ratio=decrease[fg];[bg][fg]overlay=(W-w)/2:(H-h)/2"
+  else
+    local crop_x
+    case "$crop_pos" in
+      left) crop_x="0" ;;
+      center) crop_x="(iw-ow)/2" ;;
+      right) crop_x="iw-ow" ;;
+      *)
+        if [[ "$crop_pos" =~ ^[0-9]+$ ]] && (( crop_pos >= 0 && crop_pos <= 100 )); then
+          crop_x="(iw-ow)*${crop_pos}/100"
+        else
+          echo "❌ Invalid crop position: $crop_pos (use left, center, right, blur, or 0-100)"
+          return 1
+        fi ;;
+    esac
+    vf="crop=ih*9/16:ih:${crop_x}:0,scale=1080:1920"
+  fi
+
+  echo "Fetching stream URLs..."
+  local video_url audio_url
+  video_url=$(yt-dlp -f 'bestvideo[ext=mp4]/bestvideo' --get-url "$url")
+  audio_url=$(yt-dlp -f 'bestaudio[ext=m4a]/bestaudio' --get-url "$url")
+
+  echo "🎬 Cutting to 9:16 (mode: ${crop_pos})..."
+  if [[ "$crop_pos" == "blur" ]]; then
+    ffmpeg -ss "$start_time" -to "$end_time" -i "$video_url" \
+           -ss "$start_time" -to "$end_time" -i "$audio_url" \
+           -filter_complex "[0:v]${vf}[out]" \
+           -map "[out]" -map 1:a \
+           -c:v libx264 -preset fast -crf 18 \
+           -c:a aac -b:a 192k \
+           "${output_name}.mp4" -y
+  else
+    ffmpeg -ss "$start_time" -to "$end_time" -i "$video_url" \
+           -ss "$start_time" -to "$end_time" -i "$audio_url" \
+           -map 0:v -map 1:a \
+           -vf "$vf" \
+           -c:v libx264 -preset fast -crf 18 \
+           -c:a aac -b:a 192k \
+           "${output_name}.mp4" -y
+  fi
+  echo "✅ Done: ${output_name}.mp4"
+}
+
 # Create Telegram sticker from video
 makesticker() {
   local input="$1"
@@ -541,3 +620,4 @@ EOF
     -o "${dirname}/%(title)s.%(ext)s" \
     "$url"
 }
+export PATH="$HOME/.local/bin:$PATH"
