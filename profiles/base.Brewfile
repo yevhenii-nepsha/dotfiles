@@ -104,6 +104,7 @@ cask "claude-code"                   # Claude Code CLI tool
 # ============================================================================
 # APPLICATIONS - ESSENTIAL GUI (both machines)
 # ============================================================================
+cask "kitty"                         # GPU-accelerated terminal emulator
 cask "zen"                           # Privacy-focused browser
 cask "1password"                     # Password manager
 cask "keka"                          # Archive manager
