@@ -86,6 +86,9 @@ fi
 # Python
 alias pvd="deactivate"
 
+# Media
+alias scdl='yt-dlp -x --audio-format mp3 --audio-quality 0 --embed-thumbnail --add-metadata -o "%(playlist_index)02d - %(title)s.%(ext)s"'
+
 # ============================================================================
 # Completions
 # ============================================================================
