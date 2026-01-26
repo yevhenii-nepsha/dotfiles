@@ -171,17 +171,14 @@ cask "jellyfin"        # Media server
 
 ### Cleanup Old Installation
 
-If updating from an old dotfiles configuration with unnecessary packages:
+During `./setup_homebrew.zsh`, you'll be prompted to remove packages not in your Brewfile. You can also run cleanup manually:
 
 ```bash
 # Preview what will be removed (safe, no changes)
-./bin/cleanup-server-packages --dry-run
+brew bundle cleanup
 
-# Review the list, then run cleanup
-./bin/cleanup-server-packages
-
-# Automated removal without prompts
-./bin/cleanup-server-packages --yes
+# Remove extra packages
+brew bundle cleanup --force
 ```
 
 **What gets removed on server:**
@@ -189,12 +186,11 @@ If updating from an old dotfiles configuration with unnecessary packages:
 - Azure tools (only for work machine)
 - Communication apps (Telegram, Signal, Zoom)
 - Media apps (Spotify, IINA)
-- Old packages (e.g., `docker` → `docker-desktop`)
 
 **What stays on server:**
 - All CLI tools from `base.Brewfile`
-- Essential GUI (Ghostty, Brave Browser, 1Password)
-- Server tools (Jellyfin, Podman)
+- Essential GUI (Kitty, Zen Browser, 1Password)
+- Server tools (Jellyfin)
 
 ### Server-Specific Configuration
 

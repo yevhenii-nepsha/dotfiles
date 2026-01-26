@@ -96,53 +96,29 @@ brew-diff server base
 
 ---
 
-### cleanup-server-packages
+### Package Cleanup
 
-Remove GUI applications and local-only packages that aren't needed on the server profile. Helps keep server installations lean.
+Remove packages not defined in your Brewfile. This is handled automatically during `setup_homebrew.zsh` which shows extra packages and asks if you want to remove them.
 
-**Location:** `~/.dotfiles/bin/cleanup-server-packages`
-
-**Usage:**
+**Manual Usage:**
 ```bash
-cleanup-server-packages [options]
-```
+# Preview what would be removed (dry-run)
+brew bundle cleanup
 
-**Options:**
-- `--dry-run` - Show what would be removed without actually removing
-- `--yes` - Skip confirmation prompt and remove immediately
-
-**Examples:**
-```bash
-# Preview what would be removed
-cleanup-server-packages --dry-run
-
-# Interactive cleanup with confirmation
-cleanup-server-packages
-
-# Automatic cleanup without prompts
-cleanup-server-packages --yes
+# Remove extra packages
+brew bundle cleanup --force
 ```
 
 **How It Works:**
-1. Reads base.Brewfile and server.Brewfile to determine expected packages
-2. Compares with currently installed cask packages
-3. Identifies packages that should be removed
-4. Removes unnecessary packages (after confirmation)
-
-**Safety Features:**
-- Warns if current profile is not 'server'
-- Shows list of packages before removing
-- Requires confirmation unless --yes flag is used
-- Only removes cask packages (GUI applications)
-
-**Next Steps After Cleanup:**
-1. Run `brew cleanup` to remove old versions
-2. Run `brew list --cask` to verify remaining packages
+1. Compares installed packages with Brewfile (base + profile)
+2. Shows packages not in Brewfile
+3. During setup: asks interactively whether to remove
+4. Removes both brew formulas and cask applications
 
 **Notes:**
-- Intended for server profile only
-- Only removes cask packages, not command-line tools
-- Creates detailed output showing success/failure for each package
+- Works with both brew formulas and cask packages
+- Brewfile is generated from `profiles/base.Brewfile` + `profiles/{profile}.Brewfile`
+- Safe to run `brew bundle cleanup` (without --force) anytime to preview
 
 ---
 

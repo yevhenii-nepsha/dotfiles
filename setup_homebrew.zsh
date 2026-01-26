@@ -111,5 +111,23 @@ fi
 echo "📦 Running 'brew bundle'..."
 brew bundle --verbose
 
+# Check for packages not in Brewfile
+echo "\n🔍 Checking for packages not in Brewfile..."
+extra_packages=$(brew bundle cleanup 2>/dev/null)
+
+if [[ -n "$extra_packages" ]]; then
+    echo "$extra_packages"
+    echo ""
+    read "response?Remove these packages? (y/N): "
+    if [[ "$response" =~ ^[Yy]$ ]]; then
+        brew bundle cleanup --force
+        echo "✅ Extra packages removed"
+    else
+        echo "ℹ️  Skipped. Run 'brew bundle cleanup --force' later to remove."
+    fi
+else
+    echo "✅ No extra packages found"
+fi
+
 echo "\n✨ Homebrew setup complete for profile: $PROFILE"
 
