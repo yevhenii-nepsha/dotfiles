@@ -87,7 +87,7 @@ fi
 alias pvd="deactivate"
 
 # Media
-alias scdl='yt-dlp -x --audio-format mp3 --audio-quality 0 --embed-thumbnail --add-metadata -o "%(playlist_index)02d - %(title)s.%(ext)s"'
+alias scdl='yt-dlp -x --audio-format mp3 --audio-quality 0 --embed-thumbnail --add-metadata --downloader aria2c --downloader-args "aria2c:-x 16 -s 16" -o "%(playlist_index)02d - %(title)s.%(ext)s"'
 
 # ============================================================================
 # Completions
