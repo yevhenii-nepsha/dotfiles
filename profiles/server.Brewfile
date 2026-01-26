@@ -4,7 +4,7 @@
 # This profile includes server-specific applications and tools.
 # Most services run in Docker, so this file is intentionally minimal.
 #
-# Note: Essential tools (tmux, neovim, ghostty, brave-browser, 1password,
+# Note: Essential tools (tmux, neovim, kitty, brave-browser, 1password,
 # keka, nordvpn, docker-desktop, claude-code) are in base.Brewfile and
 # will be installed automatically.
 

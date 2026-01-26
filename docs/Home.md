@@ -88,7 +88,7 @@ Welcome to the comprehensive documentation for this dotfiles repository. This do
 ├── config/          # Application configurations
 │   ├── nvim/       # Neovim configuration
 │   ├── tmux/       # Tmux configuration
-│   ├── ghostty/    # Ghostty terminal config
+│   ├── kitty/      # Kitty terminal config
 │   └── ...
 ├── profiles/        # Brewfile profiles
 │   ├── base.Brewfile    # Core tools (all machines)

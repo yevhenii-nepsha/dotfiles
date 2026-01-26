@@ -252,7 +252,7 @@ backup.sh cleanup 14
    - .zshrc, .zshenv, .gitconfig, .gitmessage
    - .gitignore_global, .vimrc, .psqlrc
 3. **Config Directories** - State of config directory symlinks:
-   - nvim, kitty, ghostty, yazi, aerospace, tmux, bat
+   - nvim, kitty, yazi, aerospace, tmux, bat
 4. **Manifest File** - Backup metadata and system information
 
 **Backup Location:** `~/.dotfiles-backups/YYYYMMDD_HHMMSS/`
@@ -298,7 +298,7 @@ health-check.sh
 
 **Symlink Health:**
 - Common dotfiles (.zshrc, .gitconfig, etc.)
-- Config directories (nvim, kitty, ghostty, yazi, bat)
+- Config directories (nvim, kitty, yazi, bat)
 - Specific config files (tmux.conf, musikcube/hotkeys.json)
 - Identifies broken symlinks
 - Warns about non-symlinked files

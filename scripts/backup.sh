@@ -77,7 +77,6 @@ create_backup() {
     local config_dirs=(
         "nvim"
         "kitty"
-        "ghostty"
         "yazi"
         "aerospace"
         "tmux"

@@ -64,7 +64,7 @@ The installation will:
 **CLI Tools** (from `base.Brewfile`):
 - Shell: zsh, starship prompt
 - Editor: neovim
-- Terminal: tmux, ghostty
+- Terminal: tmux, kitty
 - Modern CLI: eza, bat, ripgrep, fd, fzf, zoxide
 - Git tools: lazygit, gh, git-delta
 - Python: uv, ruff, pipx, pyright
@@ -137,7 +137,7 @@ Example:
 ```ruby
 # In profiles/base.Brewfile
 brew "neovim"          # Everyone needs neovim
-cask "ghostty"         # Terminal for all machines
+cask "kitty"           # Terminal for all machines
 
 # In profiles/local.Brewfile
 cask "docker"          # Docker Desktop for development

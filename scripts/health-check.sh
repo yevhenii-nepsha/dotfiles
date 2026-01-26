@@ -69,7 +69,6 @@ check_symlinks() {
     local config_dirs=(
         "$HOME/.config/nvim"
         "$HOME/.config/kitty"
-        "$HOME/.config/ghostty"
         "$HOME/.config/yazi"
         "$HOME/.config/bat"
     )

@@ -91,7 +91,7 @@ See [Setup Guide](docs/Setup-Guide.md) for complete package lists.
 ├── config/          # Application configurations
 │   ├── nvim/       # Neovim
 │   ├── tmux/       # Tmux
-│   ├── ghostty/    # Ghostty terminal
+│   ├── kitty/      # Kitty terminal
 │   └── ...
 ├── profiles/        # Brewfile profiles
 │   ├── base.Brewfile
