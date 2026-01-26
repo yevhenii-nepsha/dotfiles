@@ -8,6 +8,7 @@
 # TAPS - Third-party repositories
 # ============================================================================
 tap "FelixKratz/formulae"            # Custom macOS tools (sketchybar, etc)
+tap "anomalyco/tap"                  # OpenCode AI coding assistant
 
 # ============================================================================
 # PROGRAMMING LANGUAGES & RUNTIMES
@@ -27,6 +28,7 @@ brew "lazygit"                       # Simple terminal UI for git commands
 brew "gh"                            # GitHub CLI tool
 brew "bfg"                           # Remove large files from git history
 brew "direnv"                        # Load/unload environment variables
+brew "opencode"                      # AI coding assistant (terminal)
 
 # ============================================================================
 # PYTHON DEVELOPMENT
