@@ -1,0 +1,26 @@
+/* Тільки інтерфейс Firefox, не веб-контент */
+:root {
+  --default-font: "JetBrainsMono Nerd Font" !important;
+}
+
+/* Меню, панелі, кнопки */
+#navigator-toolbox,
+menupopup,
+.panel-arrowcontent,
+#context-navigation,
+#contentAreaContextMenu,
+toolbarbutton,
+.tab-text {
+  font-family: var(--default-font) !important;
+}
+
+/* Developer Tools */
+#devtools-toolbox-window,
+.devtools-monospace {
+  font-family: var(--default-font) !important;
+}
+
+.urlbar,
+#searchbar {
+  font-size: 1em !important;
+}

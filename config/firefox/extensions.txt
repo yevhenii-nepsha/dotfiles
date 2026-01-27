@@ -1,0 +1,13 @@
+# Firefox Extensions
+# Install manually or via Firefox Sync
+
+# Privacy & Security
+uBlock Origin          https://addons.mozilla.org/firefox/addon/ublock-origin/
+Dark Reader            https://addons.mozilla.org/firefox/addon/darkreader/
+
+# Productivity
+Firefox Multi-Account Containers  https://addons.mozilla.org/firefox/addon/multi-account-containers/
+Tree Style Tab         https://addons.mozilla.org/firefox/addon/tree-style-tab/
+
+# Research
+Zotero Connector       https://addons.mozilla.org/firefox/addon/zotero-connector/
