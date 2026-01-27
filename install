@@ -16,26 +16,17 @@ echo -e "${BLUE}  Dotfiles Installation${NC}"
 echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
 echo ""
 
-# Check if dotbot is installed
+cd "$DOTFILES_DIR"
+
+# Install Homebrew and packages if dotbot is not available
 if ! command -v dotbot &> /dev/null; then
-    echo -e "${RED}❌ Error: dotbot is not installed${NC}"
+    echo -e "${YELLOW}📦 First-time setup: Installing Homebrew and packages...${NC}"
     echo ""
-    echo "Install with: pip install dotbot"
-    echo "Or: brew install dotbot"
-    exit 1
+    zsh ./setup_homebrew.zsh
+    echo ""
 fi
 
-# Run Homebrew setup
-echo -e "${YELLOW}📦 Installing packages with Homebrew...${NC}"
-echo ""
-cd "$DOTFILES_DIR"
-zsh ./setup_homebrew.zsh
-
-echo ""
-echo -e "${YELLOW}🔗 Creating symlinks with dotbot...${NC}"
-echo ""
-
-# Run dotbot
+# Run dotbot (handles symlinks, Homebrew updates, tmux plugins, health check)
 dotbot -c "$DOTFILES_DIR/install.conf.yaml"
 
 echo ""

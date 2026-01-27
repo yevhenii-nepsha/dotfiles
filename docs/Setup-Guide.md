@@ -15,19 +15,13 @@ Complete guide for installing and configuring dotfiles on local machines and ser
 
 Before installing dotfiles, ensure you have:
 
-1. **Homebrew** - Package manager for macOS
+1. **Git** - Version control (usually pre-installed on macOS)
+2. **Xcode Command Line Tools** - Required for Homebrew
    ```bash
-   /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+   xcode-select --install
    ```
 
-2. **Dotbot** - Dotfiles installation tool
-   ```bash
-   pip install dotbot
-   # or
-   brew install dotbot
-   ```
-
-3. **Git** - Version control (usually pre-installed on macOS)
+> **Note:** Homebrew and all packages (including dotbot) are installed automatically by the `./install` script.
 
 ## First-Time Setup
 
@@ -42,8 +36,6 @@ Before installing dotfiles, ensure you have:
 2. **Set profile** (optional, defaults to `local`):
    ```bash
    echo "local" > ~/.dotfiles-profile
-   # or use the helper script:
-   ./bin/dotfiles-profile set local
    ```
 
 3. **Run installation:**
@@ -51,13 +43,14 @@ Before installing dotfiles, ensure you have:
    ./install
    ```
 
-The installation will:
-- Create necessary directories
-- Symlink configuration files
-- Install Homebrew packages from profiles
-- Set up tmux plugins
-- Configure git hooks
-- Run health checks
+The installation automatically:
+- Installs Homebrew (if not present)
+- Installs all packages from profile Brewfiles
+- Creates necessary directories
+- Symlinks configuration files
+- Sets up tmux plugins
+- Configures git hooks
+- Runs health checks
 
 ### What Gets Installed (Local Profile)
 
@@ -161,7 +154,7 @@ cask "jellyfin"        # Media server
 
 2. **Set server profile:**
    ```bash
-   ./bin/dotfiles-profile set server
+   echo "server" > ~/.dotfiles-profile
    ```
 
 3. **Install:**
@@ -437,7 +430,6 @@ dotbot -c install.conf.yaml --only shell
 
 - **Configure Neovim**: See [Neovim Documentation](Neovim.md)
 - **Set up Tmux**: See [Tmux Documentation](Tmux.md)
-- **Configure Podman**: See [Podman Documentation](Podman.md)
 - **Configure Docker Services**: See [Docker Services](Docker-Services.md)
 - **Learn Git Workflow**: See [Git Workflow](Git-Workflow.md)
 - **Explore Scripts**: See [Scripts Reference](Scripts-Reference.md)

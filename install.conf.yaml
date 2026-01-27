@@ -44,10 +44,10 @@
     ~/.zshenv: zshenv
 
     # Editor configuration
-    ~/.vimrc: vimrc
+    ~/.vimrc: config/vim/vimrc
 
     # Database
-    ~/.psqlrc: psqlrc
+    ~/.psqlrc: config/psql/psqlrc
 
     # Git configuration
     ~/.gitconfig: .gitconfig
@@ -56,6 +56,7 @@
 
     # Git hooks (global)
     ~/.git-hooks/commit-msg: git-hooks/commit-msg
+    ~/.git-hooks/pre-commit: git-hooks/pre-commit
 
     # Claude Code personal instructions
     ~/.claude/CLAUDE.md: CLAUDE.md
@@ -68,7 +69,7 @@
 # ============================================================================
 - link:
     # === Shell & Prompt ===
-    ~/.config/starship.toml: starship.toml
+    ~/.config/starship.toml: config/starship/starship.toml
 
     # === Editors ===
     ~/.config/nvim: config/nvim

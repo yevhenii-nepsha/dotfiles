@@ -5,19 +5,16 @@ Personal dotfiles for macOS with support for multiple machine profiles.
 ## Quick Start
 
 ```bash
-# Install Homebrew (if needed)
-/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-
 # Clone dotfiles
 git clone <your-repo-url> ~/.dotfiles
 cd ~/.dotfiles
 
 # Set profile (optional, defaults to 'local')
-./bin/dotfiles-profile set local  # For desktop/laptop
+echo "local" > ~/.dotfiles-profile   # For desktop/laptop
 # or
-./bin/dotfiles-profile set server  # For Mac Mini server
+echo "server" > ~/.dotfiles-profile  # For Mac Mini server
 
-# Install
+# Install (automatically installs Homebrew and all packages)
 ./install
 ```
 
@@ -80,8 +77,8 @@ See [Setup Guide](docs/Setup-Guide.md) for complete package lists.
 # Create backup
 ./scripts/backup.sh
 
-# Clean up old packages (server only)
-./bin/cleanup-server-packages
+# Clean up packages not in Brewfile
+brew bundle cleanup --force
 ```
 
 ## Structure

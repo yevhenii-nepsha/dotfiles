@@ -24,12 +24,6 @@ Welcome to the comprehensive documentation for this dotfiles repository. This do
   - Nested tmux configuration
   - Persistence and restoration
 
-- **[Podman](Podman.md)** - Container engine (Docker alternative)
-  - Installation and setup
-  - Migration from Docker Desktop
-  - Docker compatibility and commands
-  - Troubleshooting
-
 - **[Docker Services](Docker-Services.md)** - Server services management
   - Media stack (Navidrome + Cloudflare Tunnel)
   - Setup and configuration
