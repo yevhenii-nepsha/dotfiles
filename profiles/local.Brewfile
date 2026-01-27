@@ -25,6 +25,7 @@ cask "visual-studio-code"            # VS Code editor
 cask "claude"                        # Claude AI desktop app
 cask "obsidian"                      # Note-taking and knowledge management
 cask "excalidrawz"                   # Diagramming tool
+cask "zotero"                        # Reference manager
 
 # ============================================================================
 # APPLICATIONS - SYSTEM
@@ -46,6 +47,8 @@ cask "spotify"                       # Music streaming service
 cask "vox"                           # Music player for macOS
 cask "soulseek"                      # P2P music sharing
 cask "iina"                          # Modern video player for macOS
+cask "mp3tag"                        # MP3 tag editor
+cask "musicbrainz-picard"            # Music tagger and organizer
 
 # ============================================================================
 # APPLICATIONS - UTILITIES
