@@ -106,6 +106,7 @@ cask "claude-code"                   # Claude Code CLI tool
 # ============================================================================
 cask "kitty"                         # GPU-accelerated terminal emulator
 cask "zen"                           # Privacy-focused browser
+cask "firefox@developer-edition"     # Firefox Developer Edition
 cask "1password"                     # Password manager
 cask "keka"                          # Archive manager
 cask "nordvpn"                       # VPN client

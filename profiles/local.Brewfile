@@ -32,12 +32,6 @@ cask "excalidrawz"                   # Diagramming tool
 cask "raycast"                       # Spotlight alternative and productivity tool
 
 # ============================================================================
-# APPLICATIONS - BROWSERS
-# ============================================================================
-cask "google-chrome"                 # Google Chrome browser
-cask "firefox@developer-edition"    # Firefox Developer Edition
-
-# ============================================================================
 # APPLICATIONS - COMMUNICATION
 # ============================================================================
 cask "telegram-desktop"              # Telegram messaging app
