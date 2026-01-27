@@ -125,6 +125,12 @@
       stdout: true
       stderr: true
 
+    # === Nerd Fonts Setup ===
+    - description: "Installing Nerd Fonts via getnf"
+      command: python3 ./scripts/setup-nerd-fonts.py
+      stdout: true
+      stderr: true
+
     # === Script Permissions ===
     - description: "Setting executable permissions for maintenance scripts"
       command: |
