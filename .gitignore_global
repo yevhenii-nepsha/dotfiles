@@ -103,7 +103,13 @@ config/secrets.yml
 config/master.key
 
 # === AI Coding Assistants ===
-.claude/
+# Claude Code (ignore sessions, keep config)
+.claude/*
+!.claude/commands/
+!.claude/reference/
+!.claude/rules/
+!.claude/settings.json
+.claude/*.local.json
 claudedocs/
 .opencode/
 .specify/
