@@ -8,15 +8,6 @@
 # TAPS - Third-party repositories
 # ============================================================================
 tap "supersonic-app/supersonic"      # Supersonic music player
-tap "azure/azd"                      # Azure Developer CLI
-tap "azure/functions"                # Azure Functions Core Tools
-
-# ============================================================================
-# AZURE DEVELOPMENT
-# ============================================================================
-brew "azd"                           # Azure Developer CLI
-brew "azure-cli"                     # Azure command-line interface
-brew "azure-functions-core-tools@4"  # Azure Functions development tools
 
 # ============================================================================
 # APPLICATIONS - DEVELOPMENT & PROFESSIONAL

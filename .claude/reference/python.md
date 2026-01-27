@@ -62,14 +62,6 @@ IMPORTANT: Read this file when working with Python projects.
 - Aim for >80% code coverage on new code
 - Test file naming: `test_*.py` or `*_test.py`
 
-## Azure Functions Specific
-
-When working with Azure Functions:
-- Mock external dependencies (Cosmos DB, HTTP APIs, Service Bus)
-- Test orchestrators with mock DurableOrchestrationContext
-- Validate activity function inputs/outputs
-- Test async functions properly with pytest-asyncio
-
 ## Documentation
 
 - All functions must have docstrings (Google-style)

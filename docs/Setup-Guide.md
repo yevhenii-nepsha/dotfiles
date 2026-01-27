@@ -175,8 +175,7 @@ brew bundle cleanup --force
 ```
 
 **What gets removed on server:**
-- GUI apps not needed (VSCode, Chrome, fonts)
-- Azure tools (only for work machine)
+- GUI apps not needed (VSCode, fonts)
 - Communication apps (Telegram, Signal, Zoom)
 - Media apps (Spotify, IINA)
 
