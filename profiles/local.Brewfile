@@ -50,12 +50,4 @@ cask "google-drive"                  # Google Drive sync client
 cask "xquartz"                       # X11 for macOS (required by some apps)
 cask "openinterminal"                # Open files/folders in terminal from Finder
 
-# ============================================================================
-# FONTS
-# ============================================================================
-cask "font-hack-nerd-font"           # Programming font with icons
-cask "font-ia-writer-mono"           # Clean monospace font
-cask "font-jetbrains-mono-nerd-font" # JetBrains font with icons
-cask "font-fontawesome"              # Icon font
-cask "font-hasklug-nerd-font"        # Haskell-themed nerd font
-cask "font-symbols-only-nerd-font"   # Symbol-only nerd font
+

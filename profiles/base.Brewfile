@@ -110,3 +110,13 @@ cask "firefox@developer-edition"     # Firefox Developer Edition
 cask "1password"                     # Password manager
 cask "keka"                          # Archive manager
 cask "nordvpn"                       # VPN client
+
+# ============================================================================
+# FONTS
+# ============================================================================
+cask "font-jetbrains-mono-nerd-font" # JetBrains Mono with Nerd Font icons
+cask "font-hack-nerd-font"           # Programming font with icons
+cask "font-ia-writer-mono"           # Clean monospace font
+cask "font-fontawesome"              # Icon font
+cask "font-hasklug-nerd-font"        # Haskell-themed nerd font
+cask "font-symbols-only-nerd-font"   # Symbol-only nerd font
