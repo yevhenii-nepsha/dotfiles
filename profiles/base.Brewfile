@@ -92,6 +92,14 @@ brew "xh"                            # Fast HTTP client (httpie alternative)
 brew "gnupg"                         # GNU Privacy Guard (GPG)
 
 # ============================================================================
+# AWS DEVELOPMENT
+# ============================================================================
+brew "awscli"                        # AWS command-line interface (v2)
+brew "aws-sam-cli"                   # Serverless Application Model CLI
+brew "aws-cdk"                       # Cloud Development Kit (IaC)
+cask "aws-vault"                     # Secure AWS credential storage
+
+# ============================================================================
 # CONTAINERS
 # ============================================================================
 cask "docker"                        # Docker Desktop (container engine + GUI)
