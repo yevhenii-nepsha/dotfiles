@@ -3,14 +3,8 @@
   --default-font: "JetBrainsMono Nerd Font" !important;
 }
 
-/* Меню, панелі, кнопки */
-#navigator-toolbox,
-menupopup,
-.panel-arrowcontent,
-#context-navigation,
-#contentAreaContextMenu,
-toolbarbutton,
-.tab-text {
+/* Глобально для всього інтерфейсу */
+* {
   font-family: var(--default-font) !important;
 }
 
