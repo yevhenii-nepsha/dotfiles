@@ -13,7 +13,7 @@ Manual setup guide for the Moonfly color scheme on Telegram for iPhone/iPad.
 ### Background Tab
 | Setting | Color |
 |---------|-------|
-| Background | `#080808` |
+| Background | `#1c1c1c` |
 
 ### Accent Tab
 | Setting | Color |
@@ -37,7 +37,7 @@ For a consistent dark look, set all color slots to:
 
 | Color | Hex | Usage |
 |-------|-----|-------|
-| Background | `#080808` | Main background |
+| Background | `#1c1c1c` | Main background |
 | Surface | `#1c1c1c` | Elevated surfaces |
 | Blue | `#80a0ff` | Primary accent |
 | Bright Blue | `#78c2ff` | Hover states |
