@@ -73,6 +73,7 @@
 
     # === Editors ===
     ~/.config/nvim: config/nvim
+    ~/.config/lazyvim: config/lazyvim
 
     # === Terminal Emulators ===
     ~/.config/kitty: config/kitty
