@@ -77,6 +77,7 @@ alias cat="bat --style=plain --paging=never"
 
 # Editor
 alias ze="nvim ~/.dotfiles/zshrc"
+alias lazyvim="NVIM_APPNAME=lazyvim nvim"
 
 # SSH with kitty terminfo (only in kitty terminal)
 if [[ -n "$KITTY_WINDOW_ID" ]]; then
