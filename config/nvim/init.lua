@@ -34,4 +34,5 @@ require("lazy").setup({
     require("plugins.bullets"),
     require("plugins.table-mode"),
     require("plugins.render-markdown"),
+    require("plugins.claudecode"),
 })
