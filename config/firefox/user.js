@@ -17,8 +17,12 @@ user_pref("privacy.trackingprotection.enabled", true);
 user_pref("privacy.trackingprotection.socialtracking.enabled", true);
 user_pref("privacy.trackingprotection.emailtracking.enabled", true);
 
-// Enable fingerprinting protection
-user_pref("privacy.fingerprintingProtection", true);
+// Fingerprinting protection disabled
+user_pref("privacy.fingerprintingProtection", false);
+
+// Disable transparency - causes dark bleed-through on light sites
+user_pref("browser.tabs.allow_transparent_browser", false);
+user_pref("widget.macos.titlebar-blend-mode.behind-window", false);
 
 // Strip tracking parameters from URLs
 user_pref("privacy.query_stripping.enabled", true);
@@ -41,6 +45,8 @@ user_pref("privacy.userContext.ui.enabled", true);
 
 // Enable userChrome.css customization
 user_pref("toolkit.legacyUserProfileCustomizations.stylesheets", true);
+
+
 
 // Startup - restore previous session
 user_pref("browser.startup.page", 3);
