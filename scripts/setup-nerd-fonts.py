@@ -70,6 +70,21 @@ def install_getnf() -> bool:
         return False
 
 
+def parse_font_list(output: str) -> list[str]:
+    """Parse font list output from getnf."""
+    fonts = []
+    for line in output.strip().split("\n"):
+        font = line.strip()
+        # Skip empty lines, header line (contains ":"), and ANSI escape sequences
+        if not font or ":" in font or font.startswith("\x1b"):
+            continue
+        # Remove any ANSI color codes from font name
+        clean_font = font.replace("\x1b[33m", "").replace("\x1b[m", "").strip()
+        if clean_font:
+            fonts.append(clean_font)
+    return fonts
+
+
 def get_all_fonts() -> list[str]:
     """Get list of all available Nerd Fonts."""
     result = subprocess.run(
@@ -79,17 +94,30 @@ def get_all_fonts() -> list[str]:
     )
     if result.returncode != 0:
         return []
+    return parse_font_list(result.stdout)
+
+
+def get_installed_fonts() -> list[str]:
+    """Get list of already installed Nerd Fonts."""
+    result = subprocess.run(
+        [str(GETNF_BIN), "-l"],
+        capture_output=True,
+        text=True,
+    )
+    if result.returncode != 0:
+        return []
 
     fonts = []
     for line in result.stdout.strip().split("\n"):
-        font = line.strip()
-        # Skip empty lines, header line (contains ":"), and ANSI escape sequences
-        if not font or ":" in font or font.startswith("\x1b"):
+        line = line.strip()
+        # Skip empty lines, header line, and ANSI escape sequences
+        if not line or ":" in line or line.startswith("\x1b"):
             continue
-        # Remove any ANSI color codes from font name
-        clean_font = font.replace("\x1b[33m", "").replace("\x1b[m", "").strip()
-        if clean_font:
-            fonts.append(clean_font)
+        # Format is "FontName - vX.X.X", extract just the font name
+        if " - " in line:
+            font_name = line.split(" - ")[0].strip()
+            if font_name:
+                fonts.append(font_name)
     return fonts
 
 
@@ -127,15 +155,28 @@ def main() -> int:
         log_info("getnf already installed")
 
     # Get all available fonts
-    fonts = get_all_fonts()
-    if not fonts:
+    all_fonts = get_all_fonts()
+    if not all_fonts:
         log_error("Failed to get font list from getnf")
         return 1
 
-    log_info(f"Found {len(fonts)} available Nerd Fonts")
+    log_info(f"Found {len(all_fonts)} available Nerd Fonts")
 
-    # Install all fonts
-    if not install_fonts(fonts):
+    # Get already installed fonts
+    installed_fonts = get_installed_fonts()
+    log_info(f"Found {len(installed_fonts)} already installed")
+
+    # Calculate fonts to install
+    fonts_to_install = [f for f in all_fonts if f not in installed_fonts]
+
+    if not fonts_to_install:
+        log_success("All Nerd Fonts are already installed!")
+        return 0
+
+    log_info(f"Installing {len(fonts_to_install)} missing fonts...")
+
+    # Install only missing fonts
+    if not install_fonts(fonts_to_install):
         log_error("Font installation failed")
         return 1
 
