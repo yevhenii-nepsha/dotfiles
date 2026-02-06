@@ -111,6 +111,14 @@
       if: '[ -f ~/.dotfiles-profile ] && [ "$(cat ~/.dotfiles-profile)" = "server" ]'
 
 # ============================================================================
+# SYMLINKS - LaunchAgents (server profile only)
+# ============================================================================
+- link:
+    ~/Library/LaunchAgents/com.dotfiles.media-server.plist:
+      path: launchd/com.dotfiles.media-server.plist
+      if: '[ -f ~/.dotfiles-profile ] && [ "$(cat ~/.dotfiles-profile)" = "server" ]'
+
+# ============================================================================
 # SHELL COMMANDS - Setup and validation
 # ============================================================================
 - shell:

@@ -4,7 +4,9 @@ services:
   navidrome:
     image: deluan/navidrome:latest
     container_name: navidrome
-    restart: unless-stopped
+    # Restart managed by launchd (waits for /Volumes/archive to mount)
+    # See: launchd/com.dotfiles.media-server.plist
+    restart: "no"
     ports:
       - "4533:4533"
     environment:
