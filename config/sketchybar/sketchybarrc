@@ -2,14 +2,47 @@
 
 PLUGIN_DIR="$CONFIG_DIR/plugins"
 
+##### Moonfly Color Palette #####
+# https://github.com/bluz71/vim-moonfly-colors
+
+BAR_COLOR=0x66080808        # background #080808 (40% opacity)
+ICON_COLOR=0xffc6c6c6       # white (normal) #c6c6c6
+LABEL_COLOR=0xffbdbdbd      # foreground #bdbdbd
+ACCENT_COLOR=0xff80a0ff     # blue #80a0ff
+SPACE_BG=0x40323437         # black (normal) #323437 (25% opacity)
+SPACE_BG_ACTIVE=0xff80a0ff  # blue #80a0ff
+SPACE_ICON_ACTIVE=0xff080808  # background #080808
+FRONT_APP_BG=0xff8cc85f      # green #8cc85f
+DARK_COLOR=0xff080808        # background #080808
+TRANSPARENT=0x00000000       # fully transparent
+
+##### Fonts #####
+
+FONT="JetBrainsMono Nerd Font"
+ICON_FONT="$FONT:Bold:17.0"
+LABEL_FONT="$FONT:Medium:14.0"
+APP_FONT="sketchybar-app-font:Regular:16.0"
+
+
+##### Custom Events #####
+
+sketchybar --add event reminders_refresh
+
+##### Load Fonts #####
+
+sketchybar --load-font "$CONFIG_DIR/sketchybar-app-font.ttf"
+
 ##### Bar Appearance #####
 # https://felixkratz.github.io/SketchyBar/config/bar
 
-sketchybar --bar position=top          \
-                 height=37             \
-                 blur_radius=30        \
-                 color=0x40000000      \
-                 padding_left=10       \
+sketchybar --bar position=top              \
+                 height=37                 \
+                 blur_radius=30            \
+                 color="$BAR_COLOR"        \
+                 margin=10                 \
+                 y_offset=4                \
+                 corner_radius=10          \
+                 padding_left=10           \
                  padding_right=10
 
 ##### Changing Defaults #####
@@ -18,10 +51,10 @@ sketchybar --bar position=top          \
 default=(
   padding_left=5
   padding_right=5
-  icon.font="Hack Nerd Font:Bold:17.0"
-  label.font="Hack Nerd Font:Bold:14.0"
-  icon.color=0xffffffff
-  label.color=0xffffffff
+  icon.font="$ICON_FONT"
+  label.font="$LABEL_FONT"
+  icon.color="$ICON_COLOR"
+  label.color="$LABEL_COLOR"
   icon.padding_left=4
   icon.padding_right=4
   label.padding_left=4
@@ -40,7 +73,8 @@ for i in "${!SPACE_ICONS[@]}"; do
     icon="${SPACE_ICONS[i]}"
     icon.padding_left=7
     icon.padding_right=7
-    background.color=0x40ffffff
+    icon.highlight_color="$SPACE_ICON_ACTIVE"
+    background.color="$SPACE_BG"
     background.corner_radius=5
     background.height=25
     label.drawing=off
@@ -50,21 +84,66 @@ for i in "${!SPACE_ICONS[@]}"; do
              --set space."$sid" "${space[@]}"
 done
 
-##### Left Items #####
+##### Left Items — Front App (pill style) #####
 
-sketchybar --add item front_app left                             \
-           --set front_app icon.drawing=off                      \
-                           script="$PLUGIN_DIR/front_app.sh"     \
-           --subscribe front_app front_app_switched
+sketchybar --add item front_app left                               \
+           --set front_app icon.font="$APP_FONT"                   \
+                           icon.color="$DARK_COLOR"                \
+                           icon.padding_left=8                     \
+                           icon.padding_right=4                    \
+                           label.drawing=off                       \
+                           background.color="$FRONT_APP_BG"        \
+                           background.corner_radius=5              \
+                           background.height=25                    \
+                           script="$PLUGIN_DIR/front_app.sh"       \
+           --subscribe front_app front_app_switched                \
+                                                                   \
+                                                                   \
+           --add item front_app.name left                          \
+           --set front_app.name label.font="$LABEL_FONT"           \
+                           label.color="$LABEL_COLOR"              \
+                           icon.drawing=off                        \
+                           padding_left=0                          \
+                           background.color="$TRANSPARENT"         \
+                                                                   \
+           --add bracket front_app_bracket front_app               \
+                                           front_app.name
+
+
+##### Notch Items — Clock (left of notch) #####
+
+sketchybar --add item clock q                                    \
+           --set clock update_freq=10                            \
+                       click_script="open -a Calendar"           \
+                       script="$PLUGIN_DIR/clock.sh"
+
+##### Notch Items — Next Event (right of notch) #####
+
+sketchybar --add item calendar e                                \
+           --set calendar update_freq=60                         \
+                          icon=""                              \
+                          icon.color="$ACCENT_COLOR"             \
+                          label.color="$FRONT_APP_BG"            \
+                          click_script="open -a Calendar"        \
+                          script="$PLUGIN_DIR/calendar.sh"       \
+           --subscribe calendar system_woke                      \
+                                                                 \
+           --add item reminders e                                \
+           --set reminders update_freq=120                       \
+                           icon=""                              \
+                           icon.color="$ACCENT_COLOR"            \
+                           popup.align=center                    \
+                           popup.height=30                       \
+                           popup.background.color=0xe6080808     \
+                           popup.background.corner_radius=10     \
+                           popup.background.border_color=0x40323437 \
+                           popup.background.border_width=1       \
+                           script="$PLUGIN_DIR/reminders.sh"     \
+           --subscribe reminders mouse.clicked mouse.exited.global front_app_switched system_woke reminders_refresh
 
 ##### Right Items #####
 
-sketchybar --add item clock right                                \
-           --set clock update_freq=10                            \
-                       icon=                                    \
-                       script="$PLUGIN_DIR/clock.sh"             \
-                                                                 \
-           --add item volume right                               \
+sketchybar --add item volume right                               \
            --set volume script="$PLUGIN_DIR/volume.sh"           \
            --subscribe volume volume_change                      \
                                                                  \
