@@ -82,6 +82,9 @@
     ~/.config/yazi: config/yazi
     ~/.config/bat: config/bat
 
+    # === Status Bar ===
+    ~/.config/sketchybar: config/sketchybar
+
     # === Linters & Formatters ===
     ~/.config/ruff: config/ruff
 
