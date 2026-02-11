@@ -54,6 +54,10 @@ func listReminders() {
     dateFormatter.dateFormat = "HH:mm"
     dateFormatter.locale = Locale(identifier: "en_US_POSIX")
 
+    let now = Date()
+    var calendar = Calendar.current
+    calendar.locale = Locale(identifier: "en_US_POSIX")
+
     store.fetchReminders(matching: predicate) { reminders in
         guard let reminders = reminders else {
             print("[]")
@@ -68,14 +72,26 @@ func listReminders() {
             return da < db
         }
 
-        var items: [[String: String]] = []
+        var items: [[String: Any]] = []
         for r in sorted {
-            var item: [String: String] = [
+            var item: [String: Any] = [
                 "id": r.calendarItemIdentifier,
                 "title": r.title ?? "(no title)"
             ]
             if let dueComps = r.dueDateComponents, let dueDate = dueComps.date {
+                // Check if reminder has a specific time set (hour component exists)
+                let hasTime = dueComps.hour != nil
                 item["due"] = dateFormatter.string(from: dueDate)
+                item["hasTime"] = hasTime
+
+                // For reminders without a specific time, only mark overdue
+                // if the due date is before today (not just before now)
+                if hasTime {
+                    item["overdue"] = dueDate < now
+                } else {
+                    let startOfToday = calendar.startOfDay(for: now)
+                    item["overdue"] = dueDate < startOfToday
+                }
             }
             items.append(item)
         }
