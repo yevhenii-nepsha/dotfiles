@@ -5,11 +5,7 @@
 # https://felixkratz.github.io/SketchyBar/config/components#space
 
 if [ "$SELECTED" = "true" ]; then
-  sketchybar --set "$NAME" background.drawing=on          \
-                           background.color=0xff80a0ff     \
-                           icon.highlight=on
+  sketchybar --set "$NAME" icon.color=0xff80a0ff
 else
-  sketchybar --set "$NAME" background.drawing=off          \
-                           background.color=0x40323437     \
-                           icon.highlight=off
+  sketchybar --set "$NAME" icon.color=0xffc6c6c6
 fi

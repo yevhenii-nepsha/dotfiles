@@ -5,7 +5,7 @@ PLUGIN_DIR="$CONFIG_DIR/plugins"
 ##### Moonfly Color Palette #####
 # https://github.com/bluz71/vim-moonfly-colors
 
-BAR_COLOR=0x66080808        # background #080808 (40% opacity)
+BAR_COLOR=0x00000000        # fully transparent bar background
 ICON_COLOR=0xffc6c6c6       # white (normal) #c6c6c6
 LABEL_COLOR=0xffbdbdbd      # foreground #bdbdbd
 ACCENT_COLOR=0xff80a0ff     # blue #80a0ff
@@ -15,6 +15,8 @@ SPACE_ICON_ACTIVE=0xff080808  # background #080808
 FRONT_APP_BG=0xff8cc85f      # green #8cc85f
 DARK_COLOR=0xff080808        # background #080808
 TRANSPARENT=0x00000000       # fully transparent
+ISLAND_BG=0x40323437         # island background (25% opacity)
+ISLAND_BORDER=0x30c6c6c6     # island border (subtle)
 
 ##### Fonts #####
 
@@ -37,11 +39,11 @@ sketchybar --load-font "$CONFIG_DIR/sketchybar-app-font.ttf"
 
 sketchybar --bar position=top              \
                  height=37                 \
-                 blur_radius=30            \
+                 blur_radius=0             \
                  color="$BAR_COLOR"        \
                  margin=10                 \
                  y_offset=4                \
-                 corner_radius=10          \
+                 corner_radius=0           \
                  padding_left=10           \
                  padding_right=10
 
@@ -65,16 +67,17 @@ sketchybar --default "${default[@]}"
 ##### Mission Control Space Indicators #####
 # https://felixkratz.github.io/SketchyBar/config/components#space
 
-SPACE_ICONS=("1" "2" "3" "4" "5")
+SPACE_ICONS=(":firefox:" ":kitty:" ":obsidian:" ":music:")
 for i in "${!SPACE_ICONS[@]}"; do
   sid="$(($i+1))"
   space=(
     space="$sid"
     icon="${SPACE_ICONS[i]}"
+    icon.font="$APP_FONT"
     icon.padding_left=7
     icon.padding_right=7
     icon.highlight_color="$SPACE_ICON_ACTIVE"
-    background.color="$SPACE_BG"
+    background.color="$TRANSPARENT"
     background.corner_radius=5
     background.height=25
     label.drawing=off
@@ -84,17 +87,25 @@ for i in "${!SPACE_ICONS[@]}"; do
              --set space."$sid" "${space[@]}"
 done
 
+sketchybar --add bracket spaces_bracket '/space\..*/'              \
+           --set spaces_bracket background.color="$ISLAND_BG"      \
+                                background.corner_radius=8         \
+                                background.height=28               \
+                                background.border_color="$ISLAND_BORDER" \
+                                background.border_width=1
+
 ##### Left Items — Front App (pill style) #####
 
 sketchybar --add item front_app left                               \
-           --set front_app icon.font="$APP_FONT"                   \
-                           icon.color="$DARK_COLOR"                \
-                           icon.padding_left=8                     \
-                           icon.padding_right=4                    \
-                           label.drawing=off                       \
-                           background.color="$FRONT_APP_BG"        \
-                           background.corner_radius=5              \
-                           background.height=25                    \
+           --set front_app padding_left=16                          \
+                            icon.font="$APP_FONT"                   \
+                            icon.color="$FRONT_APP_BG"              \
+                            icon.padding_left=8                     \
+                            icon.padding_right=4                    \
+                            label.drawing=off                       \
+                            background.color="$TRANSPARENT"         \
+                            background.corner_radius=5              \
+                            background.height=25                    \
                            script="$PLUGIN_DIR/front_app.sh"       \
            --subscribe front_app front_app_switched                \
                                                                    \
@@ -107,7 +118,12 @@ sketchybar --add item front_app left                               \
                            background.color="$TRANSPARENT"         \
                                                                    \
            --add bracket front_app_bracket front_app               \
-                                           front_app.name
+                                            front_app.name          \
+           --set front_app_bracket background.color="$ISLAND_BG"    \
+                                   background.corner_radius=8       \
+                                   background.height=28             \
+                                   background.border_color="$ISLAND_BORDER" \
+                                   background.border_width=1
 
 
 ##### Notch Items — Clock (left of notch) #####
@@ -115,30 +131,58 @@ sketchybar --add item front_app left                               \
 sketchybar --add item clock q                                    \
            --set clock update_freq=10                            \
                        click_script="open -a Calendar"           \
+                       background.color="$ISLAND_BG"             \
+                       background.corner_radius=8                \
+                       background.height=28                      \
+                       background.border_color="$ISLAND_BORDER"  \
+                       background.border_width=1                 \
+                       icon.drawing=off                          \
+                       label.padding_left=10                     \
+                       label.padding_right=10                    \
+                       padding_right=15                          \
                        script="$PLUGIN_DIR/clock.sh"
 
 ##### Notch Items — Next Event (right of notch) #####
 
 sketchybar --add item calendar e                                \
            --set calendar update_freq=60                         \
-                          icon=""                              \
-                          icon.color="$ACCENT_COLOR"             \
-                          label.color="$FRONT_APP_BG"            \
-                          click_script="open -a Calendar"        \
-                          script="$PLUGIN_DIR/calendar.sh"       \
+                           padding_left=15                       \
+                           icon=""                              \
+                           icon.color="$ACCENT_COLOR"             \
+                           label.color="$FRONT_APP_BG"            \
+                           click_script="open -a Calendar"        \
+                           background.color="$ISLAND_BG"          \
+                           background.corner_radius=8             \
+                           background.height=28                   \
+                           background.border_color="$ISLAND_BORDER" \
+                           background.border_width=1              \
+                           icon.padding_left=10                   \
+                           icon.padding_right=2                   \
+                           label.padding_left=2                   \
+                           label.padding_right=10                 \
+                           script="$PLUGIN_DIR/calendar.sh"       \
            --subscribe calendar system_woke                      \
-                                                                 \
+                                                                  \
            --add item reminders e                                \
            --set reminders update_freq=120                       \
-                           icon=""                              \
-                           icon.color="$ACCENT_COLOR"            \
-                           popup.align=center                    \
-                           popup.height=30                       \
-                           popup.background.color=0xff080808     \
-                           popup.background.corner_radius=10     \
-                           popup.background.border_color=0x40323437 \
-                           popup.background.border_width=1       \
-                           script="$PLUGIN_DIR/reminders.sh"     \
+                            icon=""                              \
+                            icon.color="$ACCENT_COLOR"            \
+                            background.color="$ISLAND_BG"         \
+                            background.corner_radius=8            \
+                            background.height=28                  \
+                            background.border_color="$ISLAND_BORDER" \
+                            background.border_width=1             \
+                            icon.padding_left=10                  \
+                            icon.padding_right=2                  \
+                            label.padding_left=2                  \
+                            label.padding_right=10                \
+                            popup.align=center                    \
+                            popup.height=30                       \
+                            popup.background.color=0xff080808     \
+                            popup.background.corner_radius=10     \
+                            popup.background.border_color=0x40323437 \
+                            popup.background.border_width=1       \
+                            script="$PLUGIN_DIR/reminders.sh"     \
            --subscribe reminders mouse.clicked mouse.exited.global front_app_switched system_woke reminders_refresh
 
 ##### Right Items #####
@@ -150,7 +194,14 @@ sketchybar --add item volume right                               \
            --add item battery right                              \
            --set battery update_freq=120                         \
                          script="$PLUGIN_DIR/battery.sh"         \
-           --subscribe battery system_woke power_source_change
+           --subscribe battery system_woke power_source_change     \
+                                                                  \
+           --add bracket status_bracket volume battery            \
+           --set status_bracket background.color="$ISLAND_BG"     \
+                                background.corner_radius=8        \
+                                background.height=28              \
+                                background.border_color="$ISLAND_BORDER" \
+                                background.border_width=1
 
 ##### Force all scripts to run the first time (never do this in a script) #####
 sketchybar --update
