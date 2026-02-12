@@ -29,7 +29,6 @@ APP_FONT="sketchybar-app-font:Regular:16.0"
 ##### Custom Events #####
 
 sketchybar --add event reminders_refresh
-sketchybar --add event volume_devices_refresh
 
 ##### Load Fonts #####
 
@@ -38,7 +37,7 @@ sketchybar --load-font "$CONFIG_DIR/sketchybar-app-font.ttf"
 ##### Bar Appearance #####
 # https://felixkratz.github.io/SketchyBar/config/bar
 
-sketchybar --bar position=top              \
+sketchybar --bar position=bottom            \
                  height=37                 \
                  blur_radius=0             \
                  color="$BAR_COLOR"        \
@@ -127,9 +126,33 @@ sketchybar --add item front_app left                               \
                                    background.border_width=1
 
 
-##### Notch Items — Clock (left of notch) #####
+##### Center Items — Calendar, Clock, Reminders #####
 
-sketchybar --add item clock q                                    \
+sketchybar --add item calendar center                            \
+           --set calendar update_freq=60                         \
+                           icon=""                              \
+                           icon.color="$ACCENT_COLOR"             \
+                           label.color="$FRONT_APP_BG"            \
+                           background.color="$ISLAND_BG"          \
+                           background.corner_radius=8             \
+                           background.height=28                   \
+                           background.border_color="$ISLAND_BORDER" \
+                           background.border_width=1              \
+                           icon.padding_left=10                   \
+                           icon.padding_right=2                   \
+                           label.padding_left=2                   \
+                           label.padding_right=10                 \
+                           popup.align=center                     \
+                           popup.height=30                        \
+                           popup.background.color=0xff080808      \
+                           popup.background.corner_radius=10      \
+                           popup.background.border_color=0x40323437 \
+                           popup.background.border_width=1        \
+                           script="$PLUGIN_DIR/calendar.sh"       \
+           --subscribe calendar mouse.clicked mouse.exited.global \
+                               front_app_switched system_woke    \
+                                                                  \
+           --add item clock center                               \
            --set clock update_freq=10                            \
                        click_script="open -a Calendar"           \
                        background.color="$ISLAND_BG"             \
@@ -140,31 +163,9 @@ sketchybar --add item clock q                                    \
                        icon.drawing=off                          \
                        label.padding_left=10                     \
                        label.padding_right=10                    \
-                       padding_right=15                          \
-                       script="$PLUGIN_DIR/clock.sh"
-
-##### Notch Items — Next Event (right of notch) #####
-
-sketchybar --add item calendar e                                \
-           --set calendar update_freq=60                         \
-                           padding_left=15                       \
-                           icon=""                              \
-                           icon.color="$ACCENT_COLOR"             \
-                           label.color="$FRONT_APP_BG"            \
-                           click_script="open -a Calendar"        \
-                           background.color="$ISLAND_BG"          \
-                           background.corner_radius=8             \
-                           background.height=28                   \
-                           background.border_color="$ISLAND_BORDER" \
-                           background.border_width=1              \
-                           icon.padding_left=10                   \
-                           icon.padding_right=2                   \
-                           label.padding_left=2                   \
-                           label.padding_right=10                 \
-                           script="$PLUGIN_DIR/calendar.sh"       \
-           --subscribe calendar system_woke                      \
+                       script="$PLUGIN_DIR/clock.sh"             \
                                                                   \
-           --add item reminders e                                \
+           --add item reminders center                            \
            --set reminders update_freq=120                       \
                             icon=""                              \
                             icon.color="$ACCENT_COLOR"            \
@@ -186,32 +187,7 @@ sketchybar --add item calendar e                                \
                             script="$PLUGIN_DIR/reminders.sh"     \
            --subscribe reminders mouse.clicked mouse.exited.global front_app_switched system_woke reminders_refresh
 
-##### Right Items #####
 
-sketchybar --add item volume right                               \
-           --set volume script="$PLUGIN_DIR/volume.sh"           \
-                        popup.align=right                         \
-                        popup.height=30                           \
-                        popup.background.color=0xff080808         \
-                        popup.background.corner_radius=10         \
-                        popup.background.border_color=0x40323437  \
-                        popup.background.border_width=1           \
-           --subscribe volume volume_change mouse.clicked         \
-                              mouse.exited.global                 \
-                              front_app_switched                  \
-                              volume_devices_refresh                      \
-                                                                 \
-           --add item battery right                              \
-           --set battery update_freq=120                         \
-                         script="$PLUGIN_DIR/battery.sh"         \
-           --subscribe battery system_woke power_source_change     \
-                                                                  \
-           --add bracket status_bracket volume battery            \
-           --set status_bracket background.color="$ISLAND_BG"     \
-                                background.corner_radius=8        \
-                                background.height=28              \
-                                background.border_color="$ISLAND_BORDER" \
-                                background.border_width=1
 
 ##### Force all scripts to run the first time (never do this in a script) #####
 sketchybar --update
