@@ -19,6 +19,11 @@ fi
 OVERDUE_COLOR=0xffe33400      # moonfly red — overdue reminders
 NORMAL_ICON_COLOR=0xff80a0ff  # moonfly blue — normal reminders
 
+# Convert number to Unicode superscript
+to_superscript() {
+  echo "$1" | tr '0123456789' '⁰¹²³⁴⁵⁶⁷⁸⁹'
+}
+
 update_reminders() {
   # Remove old popup items
   EXISTING=$(sketchybar --query "$POPUP_PARENT" 2>/dev/null | python3 -c "
@@ -39,9 +44,9 @@ except:
   LIST=$("$REMINDER_BIN" list 2>/dev/null)
 
   if [ -z "$LIST" ] || [ "$LIST" = "[]" ]; then
-    sketchybar --set "$POPUP_PARENT" label="0" \
-                                     icon.color="$NORMAL_ICON_COLOR" \
-                                     label.color=0xffbdbdbd
+    sketchybar --set "$POPUP_PARENT" label="" \
+                                     icon="󰂜"  \
+                                     icon.color="$NORMAL_ICON_COLOR"
     sketchybar --add item reminders.empty popup."$POPUP_PARENT" \
                --set reminders.empty label="No reminders due" \
                      icon.drawing=off \
@@ -51,8 +56,11 @@ except:
 
   # Determine bar label: nearest timed reminder or count with overdue coloring
   BAR_INFO=$(echo "$LIST" | python3 -c "
-import sys, json
+import sys, json, re
 from datetime import datetime
+
+def strip_emoji(text):
+    return re.sub(r'^[^\w\s]+\s*', '', text, flags=re.UNICODE).strip()
 
 items = json.load(sys.stdin)
 now = datetime.now()
@@ -82,7 +90,7 @@ for item in items:
         continue
 
 if nearest_timed and nearest_diff is not None:
-    title = nearest_timed.get('title', '')
+    title = strip_emoji(nearest_timed.get('title', ''))
     if len(title) > $MAX_TITLE_LENGTH:
         title = title[:$MAX_TITLE_LENGTH] + '...'
     hours = int(nearest_diff // 3600)
@@ -94,9 +102,12 @@ if nearest_timed and nearest_diff is not None:
     else:
         time_str = 'in <1m'
     print(f'LABEL={title} · {time_str}')
+    print(f'COUNT={count}')
     print(f'OVERDUE=false')
 else:
-    print(f'LABEL={count}')
+    # No timed reminders — show count only in icon badge, label is empty
+    print(f'LABEL=')
+    print(f'COUNT={count}')
     if has_overdue:
         print(f'OVERDUE=true')
     else:
@@ -104,26 +115,39 @@ else:
 ")
 
   BAR_LABEL=$(echo "$BAR_INFO" | grep '^LABEL=' | cut -d= -f2-)
+  BAR_COUNT=$(echo "$BAR_INFO" | grep '^COUNT=' | cut -d= -f2-)
   BAR_OVERDUE=$(echo "$BAR_INFO" | grep '^OVERDUE=' | cut -d= -f2-)
+
+  # Build icon with superscript badge: "󰂜⁵" or just "󰂜"
+  if [ -n "$BAR_COUNT" ] && [ "$BAR_COUNT" -gt 0 ] 2>/dev/null; then
+    ICON_TEXT="󰂜$(to_superscript "$BAR_COUNT")"
+  else
+    ICON_TEXT="󰂜"
+  fi
 
   if [ "$BAR_OVERDUE" = "true" ]; then
     sketchybar --set "$POPUP_PARENT" label="$BAR_LABEL" \
+                                     icon="$ICON_TEXT"   \
                                      icon.color="$OVERDUE_COLOR" \
                                      label.color="$OVERDUE_COLOR"
   else
     sketchybar --set "$POPUP_PARENT" label="$BAR_LABEL" \
+                                     icon="$ICON_TEXT"   \
                                      icon.color="$NORMAL_ICON_COLOR" \
                                      label.color=0xffbdbdbd
   fi
 
   # Build popup items
   echo "$LIST" | python3 -c "
-import sys, json
+import sys, json, re
+
+def strip_emoji(text):
+    return re.sub(r'^[^\w\s]+\s*', '', text, flags=re.UNICODE).strip()
 
 items = json.load(sys.stdin)
 for i, item in enumerate(items):
     item_id = item['id']
-    title = item.get('title', '(no title)')
+    title = strip_emoji(item.get('title', '(no title)'))
     due = item.get('due', '')
     has_time = item.get('hasTime', False)
     overdue = item.get('overdue', False)

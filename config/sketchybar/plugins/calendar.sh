@@ -29,6 +29,11 @@ get_events() {
   "$CALENDAR_BIN" "$DAYS_TO_FETCH" 2>/dev/null | sed -n '/^-----$/,$ { /^-----$/d; p; }'
 }
 
+# Strip leading emoji and trailing whitespace from a title
+strip_emoji() {
+  echo "$1" | sed 's/^[^[:alnum:][:space:]]*[[:space:]]*//' | sed 's/[[:space:]]*$//'
+}
+
 format_duration() {
   local secs=$1 suffix=$2
   local hours=$(( secs / 3600 ))
@@ -59,7 +64,8 @@ update_bar_label() {
     [ -z "$line" ] && continue
 
     local time_part="${line%% |*}"
-    local title="${line#* | }"
+    local title
+    title=$(strip_emoji "${line#* | }")
     local event_date="${time_part%% *}"
     local time_range="${time_part##* }"
 
@@ -103,7 +109,8 @@ update_bar_label() {
   local first_allday
   first_allday=$(echo "$events" | grep "all-day" | head -1)
   if [ -n "$first_allday" ]; then
-    local title="${first_allday#* | }"
+    local title
+    title=$(strip_emoji "${first_allday#* | }")
     if [ ${#title} -gt $MAX_TITLE_LENGTH ]; then
       title="${title:0:$MAX_TITLE_LENGTH}..."
     fi
@@ -164,7 +171,8 @@ except:
     [ -z "$line" ] && continue
 
     local time_part="${line%% |*}"
-    local title="${line#* | }"
+    local title
+    title=$(strip_emoji "${line#* | }")
     local event_date="${time_part%% *}"
     local time_range="${time_part##* }"
 
