@@ -89,10 +89,12 @@ func fetchEvents() {
     var calendar = Calendar.current
     calendar.locale = Locale(identifier: "en_US_POSIX")
 
+    let startOfToday = calendar.startOfDay(for: now)
+
     if let targetDay = calendar.date(byAdding: .day, value: daysToFetch - 1, to: now),
         let endOfTargetDay = calendar.date(bySettingHour: 23, minute: 59, second: 59, of: targetDay) {
 
-        let predicate = store.predicateForEvents(withStart: now, end: endOfTargetDay, calendars: selectedCalendars)
+        let predicate = store.predicateForEvents(withStart: startOfToday, end: endOfTargetDay, calendars: selectedCalendars)
         let events = store.events(matching: predicate).sorted { $0.startDate < $1.startDate }
 
         let timeFormatter = DateFormatter()
@@ -103,15 +105,20 @@ func fetchEvents() {
         dateFormatter.dateFormat = "yyyy-MM-dd"
         dateFormatter.locale = Locale(identifier: "en_US_POSIX")
 
-        for event in events where event.endDate > now {
-            let startTime = timeFormatter.string(from: event.startDate)
-            let endTime = timeFormatter.string(from: event.endDate)
-            let dateString = dateFormatter.string(from: event.startDate)
+        for event in events {
             let title = (event.title ?? "(No Title)")
                 .replacingOccurrences(of: "\u{00A0}", with: " ")    // Replace non-breaking space
                 .replacingOccurrences(of: "\u{2013}", with: "-")    // Replace en dash
 
-            print("\(dateString) \(startTime)-\(endTime) | \(title)")
+            if event.isAllDay {
+                let dateString = dateFormatter.string(from: event.startDate)
+                print("\(dateString) all-day | \(title)")
+            } else {
+                let startTime = timeFormatter.string(from: event.startDate)
+                let endTime = timeFormatter.string(from: event.endDate)
+                let dateString = dateFormatter.string(from: event.startDate)
+                print("\(dateString) \(startTime)-\(endTime) | \(title)")
+            }
         }
     } else {
         print("Failed to calculate end date")
