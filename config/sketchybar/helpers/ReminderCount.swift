@@ -19,6 +19,8 @@ func getEndOfToday() -> Date? {
 }
 
 func countReminders() {
+    store.refreshSourcesIfNecessary()
+
     guard let endOfToday = getEndOfToday() else {
         print("0")
         semaphore.signal()
@@ -38,6 +40,8 @@ func countReminders() {
 }
 
 func listReminders() {
+    store.refreshSourcesIfNecessary()
+
     guard let endOfToday = getEndOfToday() else {
         print("[]")
         semaphore.signal()
