@@ -9,6 +9,12 @@
 # Backup files
 *.bak
 CHANGELOG.local.md
+.claude/knowledge/
+
+# SketchyBar compiled helpers (rebuild with swiftc)
+config/sketchybar/helpers/calendar_events
+config/sketchybar/helpers/reminder_count
+config/sketchybar/helpers/calendars.txt
 
 # Profile-specific files
 Brewfile

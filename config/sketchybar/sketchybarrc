@@ -1,0 +1,193 @@
+#!/bin/bash
+
+PLUGIN_DIR="$CONFIG_DIR/plugins"
+
+##### Moonfly Color Palette #####
+# https://github.com/bluz71/vim-moonfly-colors
+
+BAR_COLOR=0x00000000        # fully transparent bar background
+ICON_COLOR=0xffc6c6c6       # white (normal) #c6c6c6
+LABEL_COLOR=0xffbdbdbd      # foreground #bdbdbd
+ACCENT_COLOR=0xff80a0ff     # blue #80a0ff
+SPACE_BG=0x40323437         # black (normal) #323437 (25% opacity)
+SPACE_BG_ACTIVE=0xff80a0ff  # blue #80a0ff
+SPACE_ICON_ACTIVE=0xff080808  # background #080808
+FRONT_APP_BG=0xff8cc85f      # green #8cc85f
+DARK_COLOR=0xff080808        # background #080808
+TRANSPARENT=0x00000000       # fully transparent
+ISLAND_BG=0x40323437         # island background (25% opacity)
+ISLAND_BORDER=0x30c6c6c6     # island border (subtle)
+
+##### Fonts #####
+
+FONT="JetBrainsMono Nerd Font"
+ICON_FONT="$FONT:Bold:17.0"
+LABEL_FONT="$FONT:Medium:14.0"
+APP_FONT="sketchybar-app-font:Regular:16.0"
+
+
+##### Custom Events #####
+
+sketchybar --add event reminders_refresh
+
+##### Load Fonts #####
+
+sketchybar --load-font "$CONFIG_DIR/sketchybar-app-font.ttf"
+
+##### Bar Appearance #####
+# https://felixkratz.github.io/SketchyBar/config/bar
+
+sketchybar --bar position=bottom            \
+                 height=37                 \
+                 blur_radius=0             \
+                 color="$BAR_COLOR"        \
+                 margin=10                 \
+                 y_offset=4                \
+                 corner_radius=0           \
+                 padding_left=10           \
+                 padding_right=10
+
+##### Changing Defaults #####
+# https://felixkratz.github.io/SketchyBar/config/items
+
+default=(
+  padding_left=5
+  padding_right=5
+  icon.font="$ICON_FONT"
+  label.font="$LABEL_FONT"
+  icon.color="$ICON_COLOR"
+  label.color="$LABEL_COLOR"
+  icon.padding_left=4
+  icon.padding_right=4
+  label.padding_left=4
+  label.padding_right=4
+)
+sketchybar --default "${default[@]}"
+
+##### Mission Control Space Indicators #####
+# https://felixkratz.github.io/SketchyBar/config/components#space
+
+SPACE_ICONS=(":firefox:" ":kitty:" ":obsidian:" ":music:")
+for i in "${!SPACE_ICONS[@]}"; do
+  sid="$(($i+1))"
+  space=(
+    space="$sid"
+    icon="${SPACE_ICONS[i]}"
+    icon.font="$APP_FONT"
+    icon.padding_left=7
+    icon.padding_right=7
+    icon.highlight_color="$SPACE_ICON_ACTIVE"
+    background.color="$TRANSPARENT"
+    background.corner_radius=5
+    background.height=25
+    label.drawing=off
+    script="$PLUGIN_DIR/space.sh"
+  )
+  sketchybar --add space space."$sid" left \
+             --set space."$sid" "${space[@]}"
+done
+
+sketchybar --add bracket spaces_bracket '/space\..*/'              \
+           --set spaces_bracket background.color="$ISLAND_BG"      \
+                                background.corner_radius=8         \
+                                background.height=28               \
+                                background.border_color="$ISLAND_BORDER" \
+                                background.border_width=1
+
+##### Left Items — Front App (pill style) #####
+
+sketchybar --add item front_app left                               \
+           --set front_app padding_left=16                          \
+                            icon.font="$APP_FONT"                   \
+                            icon.color="$FRONT_APP_BG"              \
+                            icon.padding_left=8                     \
+                            icon.padding_right=4                    \
+                            label.drawing=off                       \
+                            background.color="$TRANSPARENT"         \
+                            background.corner_radius=5              \
+                            background.height=25                    \
+                           script="$PLUGIN_DIR/front_app.sh"       \
+           --subscribe front_app front_app_switched                \
+                                                                   \
+                                                                   \
+           --add item front_app.name left                          \
+           --set front_app.name label.font="$LABEL_FONT"           \
+                           label.color="$LABEL_COLOR"              \
+                           icon.drawing=off                        \
+                           padding_left=0                          \
+                           background.color="$TRANSPARENT"         \
+                                                                   \
+           --add bracket front_app_bracket front_app               \
+                                            front_app.name          \
+           --set front_app_bracket background.color="$ISLAND_BG"    \
+                                   background.corner_radius=8       \
+                                   background.height=28             \
+                                   background.border_color="$ISLAND_BORDER" \
+                                   background.border_width=1
+
+
+##### Center Items — Calendar, Clock, Reminders #####
+
+sketchybar --add item calendar center                            \
+           --set calendar update_freq=60                         \
+                           icon="󰃭"                              \
+                           icon.color="$ACCENT_COLOR"             \
+                           label.color="$FRONT_APP_BG"            \
+                           background.color="$ISLAND_BG"          \
+                           background.corner_radius=8             \
+                           background.height=28                   \
+                           background.border_color="$ISLAND_BORDER" \
+                           background.border_width=1              \
+                           icon.padding_left=10                   \
+                           icon.padding_right=2                   \
+                           label.padding_left=2                   \
+                           label.padding_right=10                 \
+                           popup.align=center                     \
+                           popup.height=30                        \
+                           popup.background.color=0xff080808      \
+                           popup.background.corner_radius=10      \
+                           popup.background.border_color=0x40323437 \
+                           popup.background.border_width=1        \
+                           script="$PLUGIN_DIR/calendar.sh"       \
+           --subscribe calendar mouse.clicked mouse.exited.global \
+                               front_app_switched system_woke    \
+                                                                  \
+           --add item clock center                               \
+           --set clock update_freq=10                            \
+                       click_script="open -a Calendar"           \
+                       background.color="$ISLAND_BG"             \
+                       background.corner_radius=8                \
+                       background.height=28                      \
+                       background.border_color="$ISLAND_BORDER"  \
+                       background.border_width=1                 \
+                       icon.drawing=off                          \
+                       label.padding_left=10                     \
+                       label.padding_right=10                    \
+                       script="$PLUGIN_DIR/clock.sh"             \
+                                                                  \
+           --add item reminders center                            \
+           --set reminders update_freq=30                        \
+                            icon="󰂜"                              \
+                            icon.color="$ACCENT_COLOR"            \
+                            background.color="$ISLAND_BG"         \
+                            background.corner_radius=8            \
+                            background.height=28                  \
+                            background.border_color="$ISLAND_BORDER" \
+                            background.border_width=1             \
+                            icon.padding_left=10                  \
+                            icon.padding_right=2                  \
+                            label.padding_left=2                  \
+                            label.padding_right=10                \
+                            popup.align=center                    \
+                            popup.height=30                       \
+                            popup.background.color=0xff080808     \
+                            popup.background.corner_radius=10     \
+                            popup.background.border_color=0x40323437 \
+                            popup.background.border_width=1       \
+                            script="$PLUGIN_DIR/reminders.sh"     \
+           --subscribe reminders mouse.clicked mouse.exited.global front_app_switched system_woke reminders_refresh
+
+
+
+##### Force all scripts to run the first time (never do this in a script) #####
+sketchybar --update
