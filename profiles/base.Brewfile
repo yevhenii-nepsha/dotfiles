@@ -7,7 +7,6 @@
 # ============================================================================
 # TAPS - Third-party repositories
 # ============================================================================
-tap "FelixKratz/formulae"            # Custom macOS tools (sketchybar, etc)
 tap "anomalyco/tap"                  # OpenCode AI coding assistant
 
 # ============================================================================

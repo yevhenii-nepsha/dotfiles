@@ -21,7 +21,6 @@ cask "zotero"                        # Reference manager
 # ============================================================================
 # APPLICATIONS - SYSTEM
 # ============================================================================
-brew "sketchybar"                    # Customizable macOS status bar replacement
 cask "raycast"                       # Spotlight alternative and productivity tool
 
 # ============================================================================
