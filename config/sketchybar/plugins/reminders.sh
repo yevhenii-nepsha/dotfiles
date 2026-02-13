@@ -10,6 +10,7 @@
 REMINDER_BIN="$CONFIG_DIR/helpers/reminder_count"
 POPUP_PARENT="reminders"
 MAX_TITLE_LENGTH=40
+BAR_LOOKAHEAD=3600  # seconds — only show bar reminder if it's due within this window
 
 if [ ! -x "$REMINDER_BIN" ]; then
   sketchybar --set "$NAME" label="--"
@@ -89,7 +90,7 @@ for item in items:
     except ValueError:
         continue
 
-if nearest_timed and nearest_diff is not None:
+if nearest_timed and nearest_diff is not None and nearest_diff <= $BAR_LOOKAHEAD:
     title = strip_emoji(nearest_timed.get('title', ''))
     if len(title) > $MAX_TITLE_LENGTH:
         title = title[:$MAX_TITLE_LENGTH] + '...'
