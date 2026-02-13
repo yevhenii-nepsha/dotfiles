@@ -11,6 +11,7 @@ CALENDAR_BIN="$CONFIG_DIR/helpers/calendar_events"
 POPUP_PARENT="calendar"
 MAX_TITLE_LENGTH=40
 DAYS_TO_FETCH=3
+BAR_LOOKAHEAD=3600  # seconds — only show bar event if it starts within this window
 
 # Colors (moonfly palette)
 ACTIVE_COLOR=0xff80a0ff     # blue — current/upcoming event
@@ -85,6 +86,10 @@ update_bar_label() {
 
     # Skip past events
     [ -n "$end_epoch" ] && [ "$end_epoch" -le "$now_epoch" ] && continue
+
+    # Skip events starting more than BAR_LOOKAHEAD seconds from now
+    [ -n "$start_epoch" ] && [ "$start_epoch" -gt "$now_epoch" ] && \
+      [ $(( start_epoch - now_epoch )) -gt $BAR_LOOKAHEAD ] && continue
 
     # Truncate title
     if [ ${#title} -gt $MAX_TITLE_LENGTH ]; then
