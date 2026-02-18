@@ -326,7 +326,7 @@ skvotdl() {
 
 # Video/Audio cutter
 vidcut() {
-  local url="" start_time="" duration=""
+  local url="" start_time="" end_time=""
   local output_name="output"
   local format="mp4"
 
@@ -334,12 +334,12 @@ vidcut() {
     case "$1" in
       -u|--url) url="$2"; shift ;;
       -s|--start) start_time="$2"; shift ;;
-      -d|--duration) duration="$2"; shift ;;
+      -e|--end) end_time="$2"; shift ;;
       -o|--output) output_name="$2"; shift ;;
       -f|--format) format="$2"; shift ;;
       -h|--help)
         cat <<EOF
-Usage: vidcut -u <URL> -s <START_TIME> -d <DURATION> [OPTIONS]
+Usage: vidcut -u <URL> -s <START_TIME> -e <END_TIME> [OPTIONS]
 Options:
   -o, --output    Output filename (default: output)
   -f, --format    Output format: mp3, mp4 (default: mp4)
@@ -351,22 +351,24 @@ EOF
     shift
   done
 
-  if [[ -z "$url" || -z "$start_time" || -z "$duration" ]]; then
+  if [[ -z "$url" || -z "$start_time" || -z "$end_time" ]]; then
     echo "🚨 Error: Required arguments missing! Use -h for help"
     return 1
   fi
 
-  local stream_url format_desc codec_args
+  local format_desc
+  local -a yt_args
   case "$format" in
     mp3)
       format_desc="🎵 audio"
-      stream_url=$(yt-dlp -f 'bestaudio/best' --get-url "$url")
-      codec_args="-vn -c:a libmp3lame -q:a 2"
+      yt_args=(-f 'bestaudio/best' --extract-audio --audio-format mp3 --audio-quality 2)
       ;;
     mp4)
       format_desc="🎬 video"
-      stream_url=$(yt-dlp -f 'bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]/best' --get-url "$url")
-      codec_args="-c copy"
+      yt_args=(
+        -f 'bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]/best'
+        --merge-output-format mp4
+      )
       ;;
     *)
       echo "❌ Unsupported format: $format (use mp3 or mp4)"
@@ -374,7 +376,11 @@ EOF
   esac
 
   echo "Cutting ${format_desc} to ${output_name}.${format}..."
-  ffmpeg -ss "$start_time" -t "$duration" -i "$stream_url" $codec_args "${output_name}.${format}" -y
+  yt-dlp --download-sections "*${start_time}-${end_time}" \
+    "${yt_args[@]}" \
+    --force-overwrite \
+    -o "${output_name}.%(ext)s" \
+    "$url"
   echo "✅ Done!"
 }
 
