@@ -79,8 +79,8 @@ alias cat="bat --style=plain --paging=never"
 alias ze="nvim ~/.dotfiles/zshrc"
 alias lazyvim="NVIM_APPNAME=lazyvim nvim"
 
-# SSH with kitty terminfo (only in kitty terminal)
-if [[ -n "$KITTY_WINDOW_ID" ]]; then
+# SSH with kitty terminfo (only in kitty terminal, not inside Zellij where mux sockets conflict)
+if [[ -n "$KITTY_WINDOW_ID" && -z "$ZELLIJ" ]]; then
   alias ssh="kitten ssh"
 fi
 

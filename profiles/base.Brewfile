@@ -23,6 +23,7 @@ brew "neovim"                        # Modern Vim-based editor
 brew "lua-language-server"           # LSP for Lua (neovim configuration)
 brew "tree-sitter"                   # Parser generator for syntax highlighting
 brew "tmux"                          # Terminal multiplexer
+brew "zellij"                        # Modern terminal multiplexer (Rust)
 brew "lazygit"                       # Simple terminal UI for git commands
 brew "gh"                            # GitHub CLI tool
 brew "bfg"                           # Remove large files from git history
