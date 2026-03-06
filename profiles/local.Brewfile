@@ -7,15 +7,12 @@
 # ============================================================================
 # TAPS - Third-party repositories
 # ============================================================================
-tap "supersonic-app/supersonic"      # Supersonic music player
-
 # ============================================================================
 # APPLICATIONS - DEVELOPMENT & PROFESSIONAL
 # ============================================================================
 cask "visual-studio-code"            # VS Code editor
 cask "claude"                        # Claude AI desktop app
 cask "obsidian"                      # Note-taking and knowledge management
-cask "excalidrawz"                   # Diagramming tool
 cask "zotero"                        # Reference manager
 
 # ============================================================================
@@ -33,7 +30,6 @@ cask "zoom"                          # Video conferencing
 # ============================================================================
 # APPLICATIONS - MEDIA & ENTERTAINMENT
 # ============================================================================
-cask "supersonic", args: { no_quarantine: true }  # Music streaming client
 cask "spotify"                       # Music streaming service
 cask "vox"                           # Music player for macOS
 cask "soulseek"                      # P2P music sharing
