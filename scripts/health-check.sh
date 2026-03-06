@@ -76,6 +76,7 @@ check_symlinks() {
     # Check specific config files
     local config_files=(
         "$HOME/.config/tmux/tmux.conf"
+        "$HOME/.config/zellij/config.kdl"
         "$HOME/.config/musikcube/hotkeys.json"
     )
 
