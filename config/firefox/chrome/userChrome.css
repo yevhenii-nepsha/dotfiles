@@ -376,6 +376,56 @@
 }
 
 /* ============================================================================
+ * TAB GROUP LABELS (VERTICAL TABS)
+ * ============================================================================
+ * Firefox 157 "nova" draws group labels as rounded pills with a sharper
+ * bottom-start corner, which reads as a comic speech bubble. Square them off
+ * and stretch the label across the sidebar with the name centered.
+ */
+
+/* Square corners in every state: expanded sidebar, collapsed sidebar,
+ * collapsed group. The shorthand also resets nova's border-end-start-radius. */
+.tab-group-label,
+.tab-group-label-hover-highlight {
+  border-radius: 0 !important;
+}
+
+/* Full-width band in the expanded vertical sidebar */
+#tabbrowser-tabs[orient="vertical"][expanded] .tab-group-label-hover-highlight {
+  margin-inline-end: 0 !important;
+  padding-inline: 0 !important;
+}
+
+#tabbrowser-tabs[orient="vertical"][expanded] .tab-group-label {
+  align-self: stretch !important;
+  max-width: none !important;
+  text-align: center !important;
+}
+
+/* Outline instead of fill: transparent inside, group color on the border and
+ * the text. --tab-group-background-color is set inline per group by
+ * tabgroup.mjs and resolves to that group's palette color. */
+.tab-group-label {
+  box-sizing: border-box !important;
+  background-color: transparent !important;
+  color: var(--tab-group-background-color) !important;
+  border: 1px solid var(--tab-group-background-color) !important;
+}
+
+/* Hover brightens the outline instead of filling the label */
+.tab-group-label:hover,
+.tab-group-label-hover-highlight:hover > .tab-group-label {
+  background-color: transparent !important;
+  color: var(--tab-group-background-color-hover) !important;
+  border-color: var(--tab-group-background-color-hover) !important;
+}
+
+/* Keep the text vertically centered once the 1px border is added */
+#tabbrowser-tabs[orient="vertical"] .tab-group-label {
+  line-height: calc(var(--tab-group-label-size) - 2px) !important;
+}
+
+/* ============================================================================
  * BOOKMARKS BAR
  * ============================================================================ */
 
