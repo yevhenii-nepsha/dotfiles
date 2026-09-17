@@ -246,10 +246,25 @@
   margin-inline: 1px !important;
 }
 
+/* The rule above is shaped for the horizontal tab bar: a 1px gutter and a
+ * rounded-top/square-bottom tab silhouette. Both are wrong in the vertical
+ * sidebar, where nova insets the background by --tab-inner-inline-margin and
+ * centres the tab icon on that same value - a 1px gutter leaves the icon
+ * off-centre inside the selected tab's frame. Restore nova's values there. */
+#tabbrowser-tabs[orient="vertical"] .tab-background {
+  margin-inline: var(--tab-inner-inline-margin) !important;
+  border-radius: 4px !important;
+}
+
 /* Active tab */
+/* Use outline, not border: .tab-background has a fixed width in the collapsed
+ * sidebar (--tab-collapsed-background-width), so a border grows the box by 2px
+ * and knocks the selected tab out of line with the others. Firefox draws the
+ * tab border with outline for the same reason. */
 .tabbrowser-tab[selected] .tab-background {
   background-color: var(--moonfly-grey15) !important;
-  border: 1px solid var(--moonfly-blue) !important;
+  outline: 1px solid var(--moonfly-blue) !important;
+  outline-offset: -1px !important;
   border-radius: 4px !important;
 }
 
@@ -390,9 +405,12 @@
   border-radius: 0 !important;
 }
 
-/* Full-width band in the expanded vertical sidebar */
+/* Full-width band in the expanded vertical sidebar, inset on both sides by
+ * --tab-inner-inline-margin so it lines up with the tab rows below it.
+ * Nova's own rule only sets margin-inline-end, which leaves the two sides
+ * uneven once the label stretches. */
 #tabbrowser-tabs[orient="vertical"][expanded] .tab-group-label-hover-highlight {
-  margin-inline-end: 0 !important;
+  margin-inline: var(--tab-inner-inline-margin) !important;
   padding-inline: 0 !important;
 }
 
