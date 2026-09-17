@@ -8,7 +8,6 @@
       "Bash(brew tap:*)",
       "Bash(brew uninstall:*)",
       "Bash(plutil:*)",
-      "Bash(python3:*)",
       "Bash(/usr/bin/zip:*)",
       "Bash(claude mcp:*)",
       "Bash(claude mcp tools:*)",
@@ -71,7 +70,6 @@
     "astral@astral-sh": true
   },
   "outputStyle": "default",
-  "language": "Ukrainian",
   "alwaysThinkingEnabled": true,
   "effortLevel": "high",
   "autoUpdatesChannel": "stable",
@@ -79,9 +77,9 @@
   "prefersReducedMotion": true,
   "autoDreamEnabled": true,
   "preferredNotifChannel": "kitty",
-  "skipAutoPermissionPrompt": true,
-  "voiceEnabled": true,
-  "agentPushNotifEnabled": true,
+  "remoteControlAtStartup": false,
   "inputNeededNotifEnabled": true,
-  "remoteControlAtStartup": false
+  "agentPushNotifEnabled": true,
+  "skipAutoPermissionPrompt": true,
+  "voiceEnabled": true
 }
