@@ -84,6 +84,14 @@ if [[ -n "$KITTY_WINDOW_ID" && -z "$ZELLIJ" ]]; then
   alias ssh="kitten ssh"
 fi
 
+# Zellij: kick all other clients off a session, then reattach (run after detaching)
+zsolo() {
+  local s="${1:-main}"
+  [[ -n "$ZELLIJ" ]] && { echo "zsolo: detach first (Ctrl+o d)"; return 1; }
+  pkill -HUP -f "zellij attach ${s}\$"
+  zellij attach "$s"
+}
+
 # Python
 alias pvd="deactivate"
 
