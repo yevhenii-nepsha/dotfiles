@@ -1,7 +1,4 @@
 #!/bin/bash
+# Show date and time, e.g. "Sat 17 Oct  13:49".
 
-# The $NAME variable is passed from sketchybar and holds the name of
-# the item invoking this script:
-# https://felixkratz.github.io/SketchyBar/config/events
-
-sketchybar --set "$NAME" label="$(date '+%d/%m · %H:%M')"
+sketchybar --set "$NAME" label="$(date '+%a %d %b  %H:%M')"
