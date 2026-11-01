@@ -248,11 +248,11 @@
 
 /* The rule above is shaped for the horizontal tab bar: a 1px gutter and a
  * rounded-top/square-bottom tab silhouette. Both are wrong in the vertical
- * sidebar, where nova insets the background by --tab-inner-inline-margin and
+ * sidebar, where nova insets the background by --tab-margin-inline-inner and
  * centres the tab icon on that same value - a 1px gutter leaves the icon
  * off-centre inside the selected tab's frame. Restore nova's values there. */
 #tabbrowser-tabs[orient="vertical"] .tab-background {
-  margin-inline: var(--tab-inner-inline-margin) !important;
+  margin-inline: var(--tab-margin-inline-inner) !important;
   border-radius: 4px !important;
 }
 
@@ -406,11 +406,11 @@
 }
 
 /* Full-width band in the expanded vertical sidebar, inset on both sides by
- * --tab-inner-inline-margin so it lines up with the tab rows below it.
+ * --tab-margin-inline-inner so it lines up with the tab rows below it.
  * Nova's own rule only sets margin-inline-end, which leaves the two sides
  * uneven once the label stretches. */
 #tabbrowser-tabs[orient="vertical"][expanded] .tab-group-label-hover-highlight {
-  margin-inline: var(--tab-inner-inline-margin) !important;
+  margin-inline: var(--tab-margin-inline-inner) !important;
   padding-inline: 0 !important;
 }
 
