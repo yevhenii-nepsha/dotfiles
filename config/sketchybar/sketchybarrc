@@ -69,4 +69,23 @@ sketchybar --add item clock right \
                        click_script="open -a Calendar" \
            --subscribe clock system_woke
 
+##### Volume (right, next to clock) #####
+
+sketchybar --add slider volume right \
+           --set volume slider.width=0 \
+                        slider.highlight_color="$BLUE" \
+                        slider.background.height=5 \
+                        slider.background.corner_radius=3 \
+                        slider.background.color="$GREY_DARK" \
+                        slider.knob="●" \
+                        slider.knob.color="$BLUE" \
+                        slider.knob.drawing=on \
+                        icon.color="$BLUE" \
+                        label.drawing=off \
+                        label.width=40 \
+                        background.color="$ITEM_BG" \
+                        script="$PLUGIN_DIR/volume.sh" \
+           --subscribe volume volume_change mouse.scrolled mouse.clicked \
+                              mouse.entered mouse.exited
+
 sketchybar --update
