@@ -1,8 +1,8 @@
 # Global Claude instructions
 
 ## Communication
-- Always respond in English, whatever language Zheka writes in, until he explicitly
-  asks for another language.
+- Respond in the language set in the project config (e.g. BMad
+  `communication_language`), otherwise English.
 - Code comments and documentation in English.
 
 ## Clarify before assuming
